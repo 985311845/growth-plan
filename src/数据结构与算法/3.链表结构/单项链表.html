@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    // 封装一个单项链表
+    function LinkedList() {
+      // 链表里面必须有一个头节点，指向链表的第一个节点
+      this.head = null;
+      // 记录链表的长度
+      this.length = 0;
+
+      // 封装一个内部类：节点类
+      function Node(data) {
+        // data表示每个节点的数据
+        this.data = data;
+        // 节点中必须包含另一个属性next：表示指向下一个节点的地址
+        this.next = null
+      }
+
+      // 向链表的末尾添加一个节点
+      LinkedList.prototype.append = function (data) {
+        let nodeItem = new Node(data);
+        // 判断添加的节点是否是第一个节点
+        if (!this.head) {
+          this.head = nodeItem
+        } else {
+          // 如果不是第一个节点
+          // 用一个变量来保存循环每次的项的next是否为真，如果为真说明下一项还有数据，如果为假，说明是最后一项
+          let isLast = this.head;
+          while (isLast.next) {
+            isLast = isLast.next;
+          };
+          isLast.next = nodeItem;
+        }
+        this.length++;
+      };
+
+      // 实现toString方法
+      LinkedList.prototype.toString = function () {
+        let current = this.head;
+        let listString = '';
+        while (current) {
+          listString += current.data + ''
+          current = current.next
+        }
+        return listString;
+      };
+      // 实现insert方法
+      LinkedList.prototype.insert = function (data, index) {
+        if(index > this.length){
+          return console.log('请不要跨项添加')
+        }
+        let nodeItem = new Node(data);
+        let current = this.head;
+        if (index === 0) {
+          let current = this.head;
+          this.head = nodeItem;
+          nodeItem.next = current;
+        } else {
+          let num = 0;
+          // 保存插入项的下一项
+          let nextItem = null;
+          while (num < index - 1) {
+            current = current.next
+            num++;
+          };
+          nextItem = current.next;
+          current.next = nodeItem;
+          nodeItem.next = nextItem;
+        }
+        this.length++;
+      }
+    };
+
+    let linkedList = new LinkedList();
+    linkedList.append(123)
+    linkedList.append(456)
+    linkedList.append(789)
+    linkedList.append('jqk')
+
+    console.log(linkedList)
+
+    console.log(linkedList.toString())
+
+    linkedList.insert('zhangsan', 4)
+    console.log(linkedList)
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <button id="getData">GET</button>
+  <button id="postData">POST</button>
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+  <script>
+    $('#getData').click(() => {
+      $.ajax({
+        url: 'http://127.0.0.1/api/user',
+        type: 'get',
+        data: {
+          username: 'zs',
+          age: 22
+        },
+        success(res) {
+          console.log(res)
+          console.log('get request success')
+        }
+      })
+    })
+    $('#postData').click(() => {
+      $.ajax({
+        url: 'http://127.0.0.1/api/bookname',
+        type: 'post',
+        data: {
+          bookname: '水浒传',
+          size: 20
+        },
+        success(res) {
+          console.log(res)
+          console.log('post request success')
+        }
+      })
+    })
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,14 @@
+const mysql = require('mysql');
+
+// 创建数据库链接对象
+const db = mysql.createPool({
+  host: '127.0.0.1',
+  port: '3306',
+  connectionLimit: 20,
+  user: 'root',
+  password: 'admin123',
+  database: 'my_db_01'
+});
+
+// 向外暴露db数据库对象
+module.exports = db

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    // function* generation() {
+    //   yield 1
+    //   yield 2
+    //   yield 3
+    // }
+    // // console.dir(generation().next())
+    // for (let item in generation().next()) {
+    //   console.log(item)
+    // }
+    // // 自定义map函数
+    // Array.prototype.map = function (callback, _this) {
+    //   for (let i = 0; i < this.length; i++) {
+    //     if (!_this) {
+    //       callback(this[i], i, this)
+    //     } else {
+    //       callback.call(_this, this[i], i, this)
+    //     }
+    //   }
+    // }
+    // let arr2 = ['哈哈'];
+    // let arr = [1, 2, 3]
+    // arr.map(function (item, index, arr) {
+    //   this.push(item)
+    // }, arr2)
+    // console.log(arr2)
+    // console.dir(Array)
+    // let sym = Symbol()
+    // let sym2 = Symbol()
+    // let obj = {}
+    // obj[sym] = 123
+    // obj[sym2] = 123
+    // console.log(obj)
+    // console.log(Object())
+
+    // 手写一个迭代器
+    // class personList {
+    //   constructor() {
+
+    //   }
+    //   [Symbol.iterator] = function (array) {
+    //     let index = 0;
+    //     return {
+    //       next: function () {
+    //         if (index < array.length) {
+    //           return { value: array[index + 1], done: false }
+    //         } else {
+    //           return { done: true }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+    // let person = new personList([11, 22, 33, 44, 55, 66])
+    // for (const item of person) {
+    //   console.log(item)
+    // }
+    // console.log(new Array(1, 2, 3)[Symbol.iterator]())
+    Object.prototype[Symbol.iterator] = function () {
+      // 保证next函数里面的this与调用迭代器工厂函数的实例保持一致
+      // let _this = this;
+      let index = 0;
+      let keys = Object.keys(this);
+      return {
+        next: () => {
+          if (index < keys.length) {
+            return { value: this[keys[index++]], done: false }
+          } else {
+            return { done: true }
+          }
+        }
+      }
+    }
+
+    let obj = new Object();
+    obj.name = '张三';
+    obj.sex = '男';
+    obj.age = 25
+    for (const value of obj) {
+      console.log(value)
+    }
+  </script>
+</body>
+
+</html>
