@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    function logSth(cb) {
+      console.log('111');
+      cb()
+    }
+    function logSth2(cb) {
+      console.log('222');
+      cb()
+    }
+    function logSth3() {
+      console.log('333')
+    }
+    function doSth(t) {
+      return function () {
+        if (--t === 0) {
+          logSth(function () {
+            logSth2(function () {
+              logSth3()
+            })
+          })
+        }
+      }
+    }
+    let fn = doSth(4);
+    fn()
+    fn()
+    fn()
+    fn()
+  </script>
+</body>
+
+</html>
