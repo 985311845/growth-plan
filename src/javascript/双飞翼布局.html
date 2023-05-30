@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div class="center">中间内容</div>
+  <div class="left">左边内容</div>
+  <div class="right">右边内容</div>
+
+  <style>
+    body {
+      height: 100vh;
+      padding: 0;
+      margin: 0;
+    }
+
+    .center,
+    .left,
+    .right {
+      height: 100%;
+      float: left;
+    }
+
+    .left {
+      width: 300px;
+      background-color: pink;
+      margin-left: -100%;
+      position: relative;
+    }
+
+    .right {
+      width: 300px;
+      background-color: aqua;
+      margin-left: -300px;
+    }
+
+    .center {
+      width: 100%;
+      background-color: greenyellow;
+      padding: 0 300px;
+      box-sizing: border-box;
+    }
+  </style>
+</body>
+
+</html>

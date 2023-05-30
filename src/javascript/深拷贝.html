@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    function cloneObject(obj) {
+      if (typeof obj !== 'object' || obj === null) {
+        return obj;
+      } else {
+        let newObj = Array.isArray(obj) ? [] : {};
+        for (let key in obj) {
+          if (typeof obj[key] === 'object') {
+            newObj[key] = cloneObject(obj[key])
+          } else {
+            newObj[key] = obj[key]
+          }
+        }
+        return newObj;
+      }
+    }
+    let obj = {
+      name: '张三',
+      age: 22,
+      sex: '男',
+      like: {
+        play: '足球',
+        game: {
+          gameName: 'CF',
+          verson: '2.0.0'
+        }
+      },
+      loveFoot: [['花菜', '千张'], ['牛肉', '猪肉']]
+    }
+    let clonedObj = cloneObject(obj);
+    obj.name = '李四';
+    obj.loveFoot[1][1] = '羊肉';
+    console.log(obj)
+    console.log(clonedObj)
+  </script>
+</body>
+
+</html>
