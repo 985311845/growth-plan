@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    // let arr = [11, 22, 33, 44, 55, 22, 88, 55, 99];
+    // const set = new Set(arr);
+    // console.log(Object.prototype.toString.call(set))
+    // const newArr = Array.from(set);
+    // console.log(newArr)
+    // const arr = ['张三', '李四', '王五', '赵六', ['王麻子', '二蛋子', '李四', '狗蛋儿', ['印度尼西亚小黑人', '王五'], ['赵六', '韩非', '李斯']], ['卫庄', '盖聂', ['赤练', '端木蓉']]]
+    // console.log(Array.from(new Set(arr)));
+
+    // 递归去重
+    // function removal(arr) {
+    //   let newArr = [];
+    //   for (let key in arr) {
+    //     if (Array.isArray(arr[key])) {
+    //       newArr[key] = removal(arr[key])
+    //     } else {
+    //       newArr[key] = arr[key]
+    //     }
+    //   }
+    //   return newArr;
+    // }
+    // console.log(removal(arr))
+    // let arr = [[1, 2, 3], [2, 3, 4], [2, 1, 3], [5, 6, 7]];
+    // function unique(matrix) {
+    //   let obj = {};
+    //   let res = [];
+    //   matrix.map(item => {
+    //     item.sort((a, b) => a - b);
+    //     if (!obj.hasOwnProperty(item)) {// 判断对象中是否有这个属性名
+    //       obj[item] = item;
+    //       res.push(item);
+    //     }
+    //   })
+    //   console.log(obj)
+    //   return res;
+    // }
+    // console.log(unique(arr))
+    // const arr = [9, '1', 5, 3, 6, '2', 10, 4, '20', '8', 7];
+    // console.log(arr.sort())
+
+    // function getMaxCommonDivisor(a, b) {
+    //   if (b === 0) return a;
+    //   return getMaxCommonDivisor(b, a % b);
+    // }
+    // console.log(getMaxCommonDivisor(3, 6))
+    // 判断是否为回文字符串
+    let str = '1$2345678998765432#1';
+    function isPalindrome(str) {
+      let reg = /[\W_]/g, // 匹配所有非单词的字符以及下划线
+        newStr = str.replace(reg, "").toLowerCase(), // 替换为空字符并将大写字母转换为小写
+        reverseStr = newStr.split("").reverse().join(""); // 将字符串反转
+        console.log(newStr)
+        console.log(reverseStr)
+      return reverseStr === newStr;
+    }
+    console.log(isPalindrome(str))
+  </script>
+</body>
+
+</html>
