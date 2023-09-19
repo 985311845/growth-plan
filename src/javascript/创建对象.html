@@ -56,6 +56,43 @@
         console.log(Person1.prototype.__proto__ === Object.prototype)
         console.dir(Person1)
         console.dir(person6)
+        console.log(Person1.prototype.isPrototypeOf(person5));
+        console.log(Object.getPrototypeOf(person5))
+
+        const animal = {
+            name: 'wangcai',
+            [Symbol('k99')]: '阿拉斯加',
+            like: {
+                name: 'k11',
+                age: 18
+            }
+        }
+        console.log(animal)
+        console.log(Object.values(animal))
+        console.log(Object.entries(animal))
+        Object.values(animal)[1].name = '918'   //浅复制
+        console.log(animal)
+
+        function Person2() { };
+        Person2.prototype = {
+            name: 'Nuck',
+            age: 29,
+            job: 'dj',
+            sayName: function () {
+                console.log(this.name)
+            }
+        }
+        console.log(Person2.prototype.constructor)
+
+        // 原型式继承
+        function createObject(o) {
+            function F() { };
+            F.prototype = o;
+            return new F();
+        }
+        let p = createObject(person4);
+        p.job = 'souha'
+        let p1 = createObject(p);
     </script>
 </body>
 
