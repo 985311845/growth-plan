@@ -10,7 +10,6 @@ export default {
     };
   },
   created() {
-    console.log(this.$route, "from路由");
     const ssotoken = localStorage.getItem("token");
     this.token = ssotoken;
     this.login4A();
@@ -26,7 +25,6 @@ export default {
               type: "success",
               message: "单点成功",
             });
-            // window.location.href = "http://localhost:8081";
           } else {
             this.$message({
               type: "error",
