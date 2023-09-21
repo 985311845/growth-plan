@@ -23,7 +23,11 @@ export default {
         username: "admin",
         password: "123456",
       },
+      redirectionURL: "",
     };
+  },
+  mounted() {
+    this.redirectionURL = decodeURIComponent(this.$route.query.redirectionURL);
   },
   methods: {
     login() {
@@ -40,7 +44,13 @@ export default {
               message: "登录成功",
             });
             localStorage.setItem("token", data.token);
-            // let url = 
+            window.parent.postMessage(
+              {
+                token: localStorage.getItem("token"),
+              },
+              "*"
+            );
+            window.location.href = this.redirectionURL;
           } else {
             this.$message({
               type: "error",
