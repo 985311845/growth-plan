@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/985311845/growth-plan/issues"
   },
-  "homepage": "https://github.com/985311845/growth-plan#readme"
+  "homepage": "https://github.com/985311845/growth-plan#readme",
+  "dependencies": {
+    "typescript": "^5.3.3"
+  }
 }
