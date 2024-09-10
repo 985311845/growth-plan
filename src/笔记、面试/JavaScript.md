@@ -67,9 +67,128 @@ ECMAScript语法很大程度上借鉴了C语言和类C语言。
 "use strict"
 ```
 
+## 3.2 关键字与保留字
+
+>关键字和保留字不能作为标识符，但是可以作为对象的属性（不推荐）。
+
+## 3.3 变量
+
+ECMAScript 变量是松散类型的，意思是变量可以用于保存任何类型的数据。每个变量只不过是一个用于保存任意值的命名占位符。有 3 个关键字可用来声明变量：var、let、const，其中 var 可以在任何ECMAScript 版本中使用，let 和 const 只能在 ECMAScript 第六版及以上版本中使用。
+
+### 3.1.1 var 关键字
+
+var 定义的关键字如果不初始化的情况下，变量会保存一个特殊值undefined。
+
+>注意 虽然可以通过省略var操作符定义全局变量，但不推荐这么做。在局部作用域中定义的全局变量很难维护，也会造成困惑。这是因为不能一下子断定省略var是不是有意而为之。在严格模式下，如果像这样给未声明的变量赋值，则会导致抛出ReferenceError。
+
+1. 使用 var 声明的变量会自动提升到作用域的顶部
+2. 使用 let 声明的变量范围是块作用域，而 var 声明的是函数作用域，<b>块作用域</b>是<b>函数作用域</b>的<b color='red'>子集</b>。let 不允许同一个块作用域中出现冗余声明。
+
+> 对声明冗余报错不会因混用let和var而受影响。这两个关键字声明的并不是不同类型的变量，它们只是指出变量在相关作用域如何存在。
+
+```javascript
+var name;
+let name; // SyntaxError
+let age;
+var age; // SyntaxError
+```
+
+#### 1.暂时性死区
+
+对声明冗余报错不会因混用let和var而受影响。这两个关键字声明的并不是不同类型的变量，它们只是指出变量在相关作用域如何存在。
+
+```javascript
+    // name会被提升
+    console.log(name); // undefined
+    var name = 'Matt';
+    // age不会被提升
+    console.log(age); // ReferenceError:age没有定义
+    let age = 26;
+```
+
+在let声明之前的执行瞬间被称为“暂时性死区”。
+
+#### 2.全局声明
+
+与var关键字不同，使用let在全局作用域中声明的变量不会成为window对象的属性（var声明的变量则会）。
+
+```javascript
+    var name = 'Matt';
+    console.log(window.name); // 'Matt'
+    let age = 26;
+    console.log(window.age);   // undefined
+```
+
+## 3.4 数据类型
 
 
 
++ 原始类型（简单类型）：Number、String、Boolean、Undefined、Null、Symbol。
++ 引用类型（复杂类型）：Object，Object是一种无序键-值对的集合。
 
+### 3.4.1 typeof 操作符
 
+对一个只使用 typeof 会返回下列字符串之一：
+
++ "undefined" 表示值未定义；
++ " boolean" 表示值为布尔值；
++ "string" 表示值为字符串；
++ "number" 表示值为数值；
++ "object" 表示值为对象（而不是函数）或 null；
++ "function" 表示值为函数；
++ "symbol" 表示值为符号；
+
+typeof 是一个操作符，不是一个函数，所以不需要参数，但可以使用参数：
+
+```javascript
+    let message = "some string";
+    console.log(typeof message);     // "string"
+    console.log(typeof(message));    // "string"
+    console.log(typeof 95);           // "number"
+```
+
+注意typeof在某些情况下返回的结果可能会让人费解，但技术上讲还是正确的。比如，调用typeof null返回的是"object"。这是因为特殊值null被认为是一个对空对象的引用。
+
+#### Undefined类型
+
+对未声明的变量，只能执行一个有用的操作，就是对它调用typeof(返回值是 undefined)。（对未声明的变量调用delete也不会报错，但这个操作没什么用，实际上在严格模式下会抛出错误。）
+
+#### Null类型
+
+null值表示一个空对象指针，这也是给typeof传一个null会返回"object"的原因。
+
+undefined值是由null值派生而来的，因此ECMA-262将它们定义为表面上相等，如下面的例子所示：
+
+```javascript
+console.log(undefined == null); //true
+console.log(undefined === nul); // false
+```
+
+#### Boolean类型
+
+| 数据类型  | 转为true的值           | 转为false的值 |
+| --------- | ---------------------- | ------------- |
+| Boolean   | true                   | false         |
+| String    | 非空字符串             | ""()空字符串  |
+| Number    | 非零数值（包括无穷值） | 0，NaN        |
+| Object    | 任意对象               | null          |
+| Undefined | N/A（不存在）          | undefined     |
+
+#### Number 类型
+
+使用八进制和十六进制格式创建的数值在所有数学操作中都被视为十进制数值。
+
+存储浮点值使用的内存空间是存储整数值的两倍，所以ECMAScript总是想方设法把值转换为整数。在小数点后面没有数字的情况下，数值就会变成整数。类似地，如果数值本身就是整数，只是小数点后面跟着0（如1.0），那它也会被转换为整数。
+
+ECMAScript可以表示的最小数值保存在Number.MIN_VALUE中，这个值在多数浏览器中是5e-324；可以表示的最大数值保存在Number.MAX_VALUE中，这个值在多数浏览器中是1.797693134862315 7e+308。
+
+#### NaN 类型
+
+任何涉及NaN的操作始终返回NaN（如NaN/10），在连续多步计算时这可能是个问题。其次，NaN不等于包括NaN在内的任何值。
+
+```javascript
+console.log(NaN == NaN); // false
+```
+
+把一个值传给isNaN()后，该函数会尝试把它转换为数值。某些非数值的值可以直接转换成数值，如字符串"10"或布尔值。任何不能转换为数值的值都会导致这个函数返回true。
 
