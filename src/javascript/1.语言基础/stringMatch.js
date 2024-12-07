@@ -1,0 +1,1 @@
+console.log('foobar'.match(/bar/).index);

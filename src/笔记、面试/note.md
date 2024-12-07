@@ -74,6 +74,8 @@ nvm是node版本管理工具可以操作node版本切换、安装、查看等
 
 `nrm use taobao` 切换到淘宝镜像源
 
+`nrm add newtaobao https://registry.npmmirror.com` 新淘宝镜像源
+
 `nrm add tencent http://mirrors.cloud.tencent.com/npm/` 添加源
 
 `nrm del tencent` 删除源
