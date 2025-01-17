@@ -1,3 +1,7 @@
+# RuoYi-Vue
+
+`git clone https://gitee.com/y_project/RuoYi-Vue.git`  clone vue2.0
+
 # 关于路由
 
 ### 动态路由

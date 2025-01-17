@@ -74,7 +74,7 @@ nvm是node版本管理工具可以操作node版本切换、安装、查看等
 
 `nrm use taobao` 切换到淘宝镜像源
 
-`nrm add newtaobao https://registry.npmmirror.com` 新淘宝镜像源
+`nrm add newtaobao https://registry.npmmirror.com` 阿里镜像源
 
 `nrm add tencent http://mirrors.cloud.tencent.com/npm/` 添加源
 
@@ -84,11 +84,11 @@ nvm是node版本管理工具可以操作node版本切换、安装、查看等
 
 ### 各种源
 
-+ npm -------https://registry.npmjs.org/
-+ yarn -------https://registry.yarnpkg.com/
-+ tencent ------http://mirrors.cloud.tencent.com/npm/
-+ cnpm --------https://r.cnpmjs.org/
-+ taobao ------https://registry.npmmirror.com/
++ npm -------https://registry.npmjs.org/    npm
++ yarn -------https://registry.yarnpkg.com/   yarn
++ tencent ------http://mirrors.cloud.tencent.com/npm/  腾讯
++ cnpm --------https://r.cnpmjs.org/  淘宝
++ ali ------https://registry.npmmirror.com/   阿里
 
 # 关于git操作
 
