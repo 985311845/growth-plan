@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="text">
+
+    <script>
+        function debounce(fn, duration) {
+            // 返回一个新的函数，将来运行的是新的额函数，这个新的函数中不能有耗时操作
+            var timer;
+            return function () {
+                // 将该函数的this传递到fn
+                clearTimeout(timer);
+                var curThis = this;
+                // 将该函数的参数全部传递给fn
+                var args = Array.prototype.slice.call(arguments, 0);
+                console.log(args)
+                timer = setTimeout(() => {
+                    fn.apply(curThis, args);
+                }, duration);
+            }
+        }
+        var newHandler = debounce(function (e) {
+            console.log('用户有按键', e, this.value, '耗时操作');
+        }, 2000);
+
+        var inp = document.querySelector('input');
+        inp.addEventListener('input', newHandler)
+        // window.addEventListener('mousemove', function () {
+        //     console.log('move')
+        // })
+    </script>
+</body>
+
+</html>

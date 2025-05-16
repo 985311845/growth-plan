@@ -1,0 +1,156 @@
+.header {
+    height: 100px;
+    position: relative;
+
+}
+
+.header-logo h1 {
+    display: none;
+}
+
+.header-logo {
+    background: url(../img/logo.png);
+    width: 56px;
+    height: 56px;
+    background-size: 100% 100%;
+    margin-top: 22px;
+    margin-right: 172px;
+}
+
+.header-menu>a {
+    height: 100px;
+    line-height: 100px;
+    padding: 0 10px;
+}
+
+.header-submenu {
+    display: none;
+    width: 100%;
+    position: absolute;
+    top: 100px;
+    left: 0;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    padding: 30px 0;
+    background-color: #fff;
+    z-index: 50;
+}
+
+.header-submenu a {
+    width: 204px;
+}
+
+.header-cover {
+    width: 160px;
+    height: 110px;
+    margin-left: auto;
+    margin-right: auto;
+    border-right: 1px solid #eee;
+}
+
+.header-submenu a:last-child .header-cover {
+    border-right: none;
+}
+
+.header-cover img {
+    width: 100%;
+    height: 100%;
+}
+
+.header-name,
+.header-price {
+    text-align: center;
+}
+
+.header-price {
+    color: #ff6700;
+}
+
+.header-menu:hover .header-submenu {
+    display: block;
+}
+
+.header-search {
+    margin-top: 25px;
+    position: relative;
+}
+
+.header-search input {
+    width: 245px;
+    height: 50px;
+    padding: 0 15px;
+    outline: none;
+    border: 1px solid #ccc;
+}
+
+.header-searchinput::placeholder {
+    font-size: 16px;
+    color: #616161;
+}
+
+.header-searchicon {
+    width: 55px;
+    height: 50px;
+    outline: none;
+    border: 1px solid #ccc;
+    border-left: none;
+    cursor: pointer;
+}
+
+.header-searchicon .iconfont {
+    font-size: 20px;
+    color: #777;
+}
+
+.header-searchicon:hover {
+    background-color: #ff6700;
+    color: #fff;
+}
+
+.header-searchicon:hover .iconfont {
+    color: #fff;
+}
+
+.header-suggest {
+    position: absolute;
+    left: 0;
+    top: 50px;
+    display: none;
+    width: 245px;
+    border: 1px solid #ff6700;
+    border-top: none;
+    z-index: 60;
+}
+
+.header-suggest a {
+    display: block;
+    font-size: 12px;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 10px;
+}
+
+.header-suggest a:hover {
+    background-color: #eee;
+    color: inherit;
+}
+
+.header-search input:hover {
+    border-color: #888;
+}
+
+.header-search input:hover~.header-searchicon {
+    border-color: #888;
+}
+
+.header-search input:focus {
+    border: 1px solid #ff6700;
+}
+
+.header-search input:focus~button {
+    border-color: #ff6700;
+}
+
+.header-search input:focus~.header-suggest {
+    display: block;
+}
