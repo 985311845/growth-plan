@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div style="width: 100px; height: 100px; background-color: pink; position: absolute; top: 0; left: 0;"></div>
+
+    <script>
+        var firstTime = 0;
+        var lastTime = 0;
+        var key = false;
+        var div = document.getElementsByTagName('div')[0];
+
+        div.onmousedown = function () {
+            firstTime = new Date().getTime();
+
+        }
+
+        div.onmouseup = function () {
+            lastTime = new Date().getTime();
+
+            if (lastTime - firstTime < 300) {
+                key = true;
+            } else {
+                key = false;
+                console.log('拖拽')
+            }
+        }
+        div.onclick = function () {
+            if (key) {
+                console.log('点击')
+            }
+        }
+    </script>
+</body>
+
+</html>

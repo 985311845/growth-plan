@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+
 # 1.主流浏览器及其内核
 
 ```
@@ -1400,3 +1401,74 @@ console.log(Number.isSafeInteger((2 ＊＊ 53) -1));         // true
 
 注意，即使字符串中包含双字节字符（而不是单字节的ASCII字符），也仍然会按单字符来计数。
 >>>>>>> 9a14ef5b60d9cb93b5fa5d884ca904aee024fa39
+
+
+
+# DOM
+
+## `querySelector` 与 `querySelectorAll` 的静态性
+
+```html
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>querySelector静态性演示</title>
+    <style>
+        .active { color: red; }
+    </style>
+</head>
+<body>
+    <div class="target">原始元素</div>
+    <button id="changeBtn">修改DOM结构</button>
+    <button id="checkBtn">检查查询结果</button>
+
+    <script>
+        // 初始查询
+        const originalQuery = document.querySelector('.target');
+        console.log('初始查询:', originalQuery.textContent); // "原始元素"
+
+        document.getElementById('changeBtn').addEventListener('click', () => {
+            // 修改DOM结构
+            const newDiv = document.createElement('div');
+            newDiv.className = 'target';
+            newDiv.textContent = '新元素';
+            document.body.appendChild(newDiv);
+            
+            // 修改原始元素类名
+            originalQuery.className = 'old-target';
+        });
+
+        document.getElementById('checkBtn').addEventListener('click', () => {
+            // 重新查询（结果不会自动更新）
+            const newQuery = document.querySelector('.target');
+            console.log('重新查询结果:', newQuery.textContent); // "新元素"
+            console.log('原始查询引用:', originalQuery.textContent); // "原始元素"
+        });
+    </script>
+</body>
+</html>
+
+```
+
+```javascript
+// 静态集合示例
+const staticItems = document.querySelectorAll('.item');
+console.log(staticItems.length); // 假设初始有2个
+
+// 动态添加新元素
+document.body.appendChild(document.createElement('div')).className = 'item';
+
+console.log(staticItems.length); // 仍然是2，不会包含新增元素
+
+// 动态集合示例
+const dynamicItems = document.getElementsByClassName('item');
+console.log(dynamicItems.length); // 初始2个
+
+// 添加新元素后
+document.body.appendChild(document.createElement('div')).className = 'item';
+
+console.log(dynamicItems.length); // 变为3，自动包含新增元素
+
+```
+

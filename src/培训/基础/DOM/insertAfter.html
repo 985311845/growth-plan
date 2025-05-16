@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+        <p>
+            <span></span>
+        </p>
+        <div></div>
+        <span></span>
+        <p></p>
+    </div>
+    <script>
+        Element.prototype.insertAfter = function (ele, target) {
+            var next = target.nextElementSibling;
+            if (!next) {
+                this.appendChild(ele);
+            } else {
+                this.insertBefore(ele, next);
+            }
+        }
+        const dv = document.getElementsByTagName("div")[0];
+        const p = dv.getElementsByTagName("p")[document.getElementsByTagName("p").length - 2];
+        const s = document.createElement('strong');
+
+        dv.insertAfter(s, p);
+    </script>
+</body>
+
+</html>

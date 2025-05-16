@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .wrap {
+            width: 800px;
+            overflow: hidden;
+        }
+
+        .carousel {
+            display: flex;
+        }
+
+        img {
+            width: 400px;
+            height: 267px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="carousel">
+            <img src="./img/img1.jpg">
+            <img src="./img/img2.jpg">
+            <img src="./img/img3.jpg">
+            <img src="./img/img4.jpg">
+            <img src="./img/img5.jpg">
+        </div>
+    </div>
+    <script>
+        window.onload = function () {
+            var imgList = document.getElementsByTagName('img');
+
+            var len = imgList.length;
+
+            var currentIndex = 1;
+
+            var carousel = document.getElementsByClassName('carousel')[0];
+
+            var img1 = imgList[0];
+
+            var imgWidth = img1.offsetWidth;
+
+            var timer = null;
+
+            timer = setInterval(() => {
+
+                // var img = document.getElementsByTagName('img')[0];
+
+                carousel.style
+
+                
+            }, 2000);
+        }
+    </script>
+</body>
+
+</html>

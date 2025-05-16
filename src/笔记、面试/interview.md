@@ -9,7 +9,20 @@
    // position 的值不是 static 或者 relative
    // overflow 的值不是 visible
    // display 的值是 inline-block table-cell flex table-caption inline-flex...
+   ```
+
+   ```css
+   //会把内部元素全部转成inline-block元素
+   position:absoulute;
+   float:left/right; //浮动元素会产生浮动流
    
+   //所有产生了浮动流的元素，块级元素看不到他们，产生了bfc的元素和文本类属性元素以及文本都能看到浮动元素
+   
+   //如何触发bfc：
+   position:absoulute;
+   display:inline-block;
+   float:left/right;
+   overflow:hidden;
    ```
 
 2. margin重合及解决方案
@@ -31,6 +44,8 @@
    >情况4：高度为auto的父元素的margin-bottom和子元素的margin-bottom发生重叠
    >
    >解决方案：父元素设置border-bottom、padding-bottom来分隔它们，也可以为父元素设置一个高度，max-height和min-height也能解决这个问题
+
+   
 
 3. 外边距重叠怎么算
 

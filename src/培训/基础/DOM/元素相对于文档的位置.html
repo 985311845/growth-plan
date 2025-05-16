@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        span,
+        strong {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div
+        style="position:relative;border:1px solid red;margin-left: 20px;margin-top:20px;width: 250px;height: 250px;background-color: pink;">
+        <!-- <p
+            style="position:relative;border:1px solid red;margin-left: 20px;margin-top:20px;width: 200px;height: 200px;background-color: aqua;"> -->
+        <span
+            style="border:1px solid blue;width: 100px;height: 100px;background-color: pink;margin-left: 20px;margin-top: 20px;">
+            <strong
+                style="border:1px solid black;position: relative;margin-left: 20px;margin-top: 20px;width: 50px;height: 50px;background-color: aqua;">
+            </strong>
+        </span>
+        <!-- </p> -->
+    </div>
+    <script>
+        Element.prototype.getElementPosition = function () {
+            // debugger;
+            var that = this; //保存当前正在计算的元素
+
+            var offset = { x: 0, y: 0 }; //初始化位置
+
+            // 先计算目标元素的位置
+            offset.x = that.offsetLeft;
+            offset.y = that.offsetTop
+
+            // 返回有定位的父元素的位置，并且累加
+            function retParentEOffset(p) {
+                var x, y;
+                if (p.style['border-width'] !== '') {
+                    var borderWidth = p.style['border-width'].slice(0, -2) * 1;
+                    x = p.offsetLeft + borderWidth;
+                    y = p.offsetTop + borderWidth;
+                } else {
+                    x = p.offsetLeft;
+                    y = p.offsetTop;
+                }
+                offset.x = offset.x + x;
+                offset.y = offset.y + y;
+            }
+
+            var parentE = that.parentElement; //目标元素的父元素
+            // console.log(parentE.style.position === '')
+            // debugger
+            while (parentE) {
+                if (parentE.style.position !== '') {
+                    retParentEOffset(parentE);
+                }
+                parentE = parentE.parentElement;
+            }
+            return offset;
+        }
+        var dv = document.getElementsByTagName('strong')[0];
+        var position_d = dv.getElementPosition();
+        console.log(position_d)
+    </script>
+</body>
+
+</html>
