@@ -1,7 +1,6 @@
 var layout = (function () {
   var imgWidth = 220; // 每张图片的宽度
   var divContainer = document.getElementById('container'); // 获取图片容器
-
   // 该方法可以计算出几列
   function cal() {
     var containerWidth = divContainer.clientWidth; // 容器的宽度
@@ -50,6 +49,7 @@ var layout = (function () {
 
   // 该方法用于设置每一张图片的位置
   function setPositions() {
+    console.log('调用')
     // 在设置图片位置之前，我们首先需要知道几列
     var info = cal(); // 通过该方法，我们就可以得到列数和间隙
 

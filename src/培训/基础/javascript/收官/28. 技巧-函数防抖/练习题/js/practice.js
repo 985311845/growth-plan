@@ -2,9 +2,11 @@
 function debounce(fn, duration) {
     var timer;
     return function () {
+        var _this = this;
         clearTimeout(timer);
+        var args = Array.prototype.slice.call(arguments);
         timer = setTimeout(() => {
-            fn();
+            fn.apply(_this, args);
         }, duration);
     }
 };

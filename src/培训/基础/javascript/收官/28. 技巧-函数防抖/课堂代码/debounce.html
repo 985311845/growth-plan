@@ -16,9 +16,6 @@
           // 将该函数的this传递到fn
           var curThis = this;
           // 将该函数的参数全部传递给fn
-          function slice() {
-            this;
-          }
           var args = Array.prototype.slice.call(arguments, 0);
 
           timerId = setTimeout(function () {
