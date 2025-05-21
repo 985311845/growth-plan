@@ -13,8 +13,8 @@ function createAnimation(options) {
       from = to;
       clearInterval(timerId);
       timerId = null;
-      options.onend || options.onend();
+      options.onend && options.onend();
     };
-    options.onmove || options.onmove(from);
+    options.onmove && options.onmove(from);
   }, duration);
 }
