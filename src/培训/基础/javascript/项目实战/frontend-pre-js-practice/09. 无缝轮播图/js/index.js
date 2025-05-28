@@ -1,18 +1,4 @@
 (function () {
-  function $(selector) {
-    return document.querySelector(selector);
-  }
-
-  // 初始化
-  var curIndex = 0; // 当前显示的是第几张图片
-  var doms = {
-    container: $('.carousel-container'),
-    carouselList: $('.carousel-list'),
-    indicator: $('.indicator'),
-    arrowLeft: $('.arrow-left'),
-    arrowRight: $('.arrow-right'),
-  };
-  var containerWidth = doms.container.clientWidth; // 容器可见区域的宽度
   var urls = [
     './img/Wallpaper1.jpg',
     './img/Wallpaper2.jpg',
@@ -21,116 +7,129 @@
     './img/Wallpaper5.jpg',
   ]; //记录了要显示的所有轮播图的图片路径
 
+  function $(selector) {
+    return document.querySelector(selector);
+  };
+  function $$(selector) {
+    return document.querySelectorAll(selector)
+  };
+
+  // 总体盒子
+  var container = $('.carousel-container');
+  // 轮播列表
+  var carouselList = $('.carousel-list');
+  // 指示器
+  var indicator = $('.indicator');
+  // 左箭头
+  var arrowLeft = $('.arrow-left');
+  // 右箭头
+  var arrowRight = $('.arrow-right');
+  // 列表项的宽度
+  var itemWidth = 0;
+  // 动画持续时间
+  var totalMS = 600;
+  // 每一帧动画时间
+  var duration = 10;
+  // 当前是第几张：默认显示第一张
+  var currentIndex = 0;
+  // 动画进行中
+  var playing = false;
+  // 初始化函数
   function init() {
-    function _createImg(url) {
+    // 创建img元素，因为需要在列表后面创建一个跟第一个item一模一样的img，所以封装成函数，便于调用
+    function _createImg(i) {
       var img = document.createElement('img');
-      img.src = url;
-      img.className = 'carousel-item';
-      doms.carouselList.appendChild(img);
-    }
-
+      img.src = urls[i];
+      img.classList.add('carousel-item');
+      carouselList.appendChild(img);;
+    };
+    // 向列表中添加img和指示器
     for (var i = 0; i < urls.length; i++) {
-      _createImg(urls[i]);
-      // 创建指示器
+      // 添加img
+      _createImg(i);
+      // 添加指示器
       var div = document.createElement('div');
-      div.className = 'indicator-item';
-      doms.indicator.appendChild(div);
-    }
+      div.classList.add('indicator-item');
+      indicator.appendChild(div);
+    };
+    // 在列表末尾加一个与第一个img一模一样的img
+    _createImg(0);
 
-    // 多加一张额外的图片
-    _createImg(urls[0]);
-    // 设置容器宽度
-    doms.carouselList.style.width = doms.carouselList.children.length + '00%';
-    // 设置指示器的激活状态
-    setIndicatorStatus();
-  }
-
-  /**
-   * 根据curIndex设置指示器的状态
-   */
-  function setIndicatorStatus() {
-    // 1. 将目前激活的指示器取消激活
-    var active = $('.indicator-item.active');
-    if (active) {
-      active.className = 'indicator-item';
+    // 所有元素创建完成之后，计算列表的宽度
+    itemWidth = $('.carousel-item').getBoundingClientRect().width;
+    carouselList.style.width = carouselList.children.length + '00%';
+    // 初始化指示器选中样式
+    setActive(0);
+  };
+  // 设置指示器选中样式
+  function setActive(index) {
+    // 先清除之前的选中样式
+    for (var i = 0; i < indicator.children.length; i++) {
+      indicator.children[i].classList.remove('active')
     }
-    // 2. 激活当前的指示器
-    var index = curIndex;
-    if (index > urls.length - 1) {
+    if (index > 4) {
       index = 0;
-    }
-    doms.indicator.children[index].className = 'indicator-item active';
-  }
-
+    };
+    indicator.children[index].classList.add('active');
+  };
+  // 初始化页面样式
   init();
 
-  // 交互
-  var totalMS = 300;
-  var isPlaying = false; // 是否有正在进行的切换动画
+  // 移动
   /**
-   * 将轮播图从当前的位置，切换到newIndex位置
-   * @param {*} newIndex 新的位置的图片索引
+   * 
+   * @param {*} index 移动到index位置
    */
-  function moveTo(newIndex, onend) {
-    if (isPlaying || newIndex === curIndex) {
-      return; // 有动画进行 或 切换目标和当前一致，不做任何事情
+  function moveTo(index, onend) {
+    if (playing || index === currentIndex) {
+      return;
     }
-    isPlaying = true;
-    var from = parseFloat(doms.carouselList.style.marginLeft) || 0;
-    var to = -newIndex * containerWidth;
-
+    playing = true;
+    // 移动之前的位置:用parseFloat是去电单位px
+    var from = parseFloat(carouselList.style.marginLeft) || 0;
+    // 需要移动到的位置
+    var to = -index * itemWidth;
     createAnimation({
-      from: from,
-      to: to,
-      totalMS: totalMS,
-      onmove: function (n) {
-        doms.carouselList.style.marginLeft = n + 'px';
+      from,
+      to,
+      totalMS,
+      onmove: function (from) {
+        carouselList.style.marginLeft = from + 'px';
       },
       onend: function () {
-        isPlaying = false;
+        // 动画执行完成之后，当前项currentIndex需要index同步
         onend && onend();
-      },
+        playing = false;
+      }
     });
-
-    curIndex = newIndex; // 更改当前显示的图片索引
-    setIndicatorStatus();
-  }
-
-  // 处理指示器的点击事件
-  for (var i = 0; i < doms.indicator.children.length; i++) {
-    (function (i) {
-      doms.indicator.children[i].onclick = function () {
-        moveTo(i);
-      };
-    })(i);
-  }
-
+    currentIndex = index;
+    setActive(currentIndex);
+  };
+  // 切换到下一张：需要知道当前是第几张，就需要一个全局变量
   function next() {
-    var newIndex = curIndex + 1;
+    var newIndex = currentIndex + 1;
     var onend;
-    if (newIndex === doms.carouselList.children.length - 1) {
-      // 切换到最后一张图片了
-      // 等动画完成后，要回到第一张图片
+    if (newIndex === carouselList.children.length - 1) {
       onend = function () {
-        doms.carouselList.style.marginLeft = 0;
-        curIndex = 0;
-      };
+        carouselList.style.marginLeft = 0;
+        currentIndex = 0;
+      }
     }
     moveTo(newIndex, onend);
   }
-
+  // 切换到上一张
   function prev() {
-    var newIndex = curIndex - 1;
+    var newIndex = currentIndex - 1;
     if (newIndex < 0) {
-      var maxIndex = doms.carouselList.children.length - 1;
-      doms.carouselList.style.marginLeft = -maxIndex * containerWidth + 'px';
-      newIndex = maxIndex - 1;
-    }
+      var maxIndex = carouselList.children.length - 1;
+      carouselList.style.marginLeft = -maxIndex * itemWidth + 'px';
+      newIndex = maxIndex - 1;//切换到最后一张之后，再移动一张
+    };
     moveTo(newIndex);
   }
 
-  doms.arrowLeft.onclick = prev;
-  doms.arrowRight.onclick = next;
+  arrowRight.onclick = next;
+  arrowLeft.onclick = prev;
 
   var duration = 2000; // 自动切换的间隔
   var timerId;
@@ -140,15 +139,35 @@
       return;
     }
     timerId = setInterval(next, duration);
-  }
+  };
+  autoStart();
 
   function autoStop() {
     clearInterval(timerId);
     timerId = null;
+  };
+  // 设置指示器的选中样式
+  function setActive(index) {
+    for (var i = 0; i < indicator.children.length; i++) {
+      indicator.children[i].classList.remove('active');
+    }
+    if (index > 4) {
+      index = 0;
+    }
+    indicator.children[index].classList.add('active')
   }
 
-  autoStart(); // 最开始自动切换
-  doms.container.onmouseenter = autoStop;
-  doms.container.onmouseleave = autoStart;
-})();
+  container.onmouseenter = autoStop;
+  container.onmouseleave = autoStart;
 
+  for (var i = 0; i < indicator.children.length; i++) {
+    (function (i) {
+      indicator.children[i].addEventListener('mouseenter', handleHover.bind(indicator[i], i));
+    })(i);
+  };
+
+  function handleHover(i) {
+    moveTo(i);
+    setActive(i);
+  }
+})();

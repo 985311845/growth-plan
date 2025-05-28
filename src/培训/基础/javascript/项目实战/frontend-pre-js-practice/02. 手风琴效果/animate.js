@@ -13,7 +13,9 @@ function createAnimation(options) {
       from = to;
       clearInterval(timerId);
       timerId = null;
+      options.onmove && options.onmove(from);
       options.onend && options.onend();
+      return;
     };
     options.onmove && options.onmove(from);
   }, duration);
