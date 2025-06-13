@@ -67,9 +67,7 @@
     for (var i = 0; i < indicator.children.length; i++) {
       indicator.children[i].classList.remove('active')
     }
-    if (index > 4) {
-      index = 0;
-    };
+    index = index % urls.length;
     indicator.children[index].classList.add('active');
   };
   // 初始化页面样式
@@ -126,6 +124,16 @@
       newIndex = maxIndex - 1;//切换到最后一张之后，再移动一张
     };
     moveTo(newIndex);
+    // 一下写法如果初始的时候，默认就是下标为0，调用prev会有bug
+    // var onend;
+    // if (newIndex === 0) {
+    //   onend = function () {
+    //     var maxIndex = carouselList.children.length - 1;
+    //     carouselList.style.marginLeft = -maxIndex * itemWidth + 'px';
+    //     currentIndex = carouselList.children.length - 1;
+    //   }
+    // }
+    // moveTo(newIndex, onend)
   }
 
   arrowRight.onclick = next;

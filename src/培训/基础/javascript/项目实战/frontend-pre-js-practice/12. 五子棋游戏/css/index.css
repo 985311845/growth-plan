@@ -9,6 +9,7 @@
     justify-content: center;
     align-items: center;
     background-color: rgb(247, 230, 183);
+    cursor: pointer;
 }
 
 /* 棋盘里面的格子的样式 */
