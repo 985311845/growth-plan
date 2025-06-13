@@ -143,15 +143,15 @@ function end() {
             $(`.chess[data-rowindex='${chessArr[i].y}'][data-columnindex='${chessArr[i].x}']`).innerHTML = i;
         }
     };
-    Promise.resolve().then(() => {
-        if (window.confirm('是否要重新开始一局？')) {
-            // 进行一些初始化操作
-            chessArr = []; // 重置棋子的数组
-            initChessboard(); // 重新绘制棋盘
-            isGameOver = false;
+    // Promise.resolve().then(() => {
+    //     if (window.confirm('是否要重新开始一局？')) {
+    //         // 进行一些初始化操作
+    //         chessArr = []; // 重置棋子的数组
+    //         initChessboard(); // 重新绘制棋盘
+    //         isGameOver = false;
 
-        }
-    })
+    //     }
+    // })
 }
 
 // 事件绑定
