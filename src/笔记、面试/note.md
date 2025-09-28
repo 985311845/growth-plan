@@ -88,7 +88,7 @@ nvm是node版本管理工具可以操作node版本切换、安装、查看等
 + yarn -------https://registry.yarnpkg.com/   yarn
 + tencent ------http://mirrors.cloud.tencent.com/npm/  腾讯
 + cnpm --------https://r.cnpmjs.org/  淘宝
-+ ali ------https://registry.npmmirror.com/   阿里
++ ali ------https://registry.npmmirror.com/   阿里（新镜像源）
 
 # 关于git操作
 
