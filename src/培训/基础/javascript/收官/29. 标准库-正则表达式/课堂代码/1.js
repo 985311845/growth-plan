@@ -1,1 +1,0 @@
-var reg = /\d[a-zA-Z]{1}|[a-zA-Z]{2}\d/g;
