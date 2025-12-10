@@ -170,7 +170,73 @@ SEO搜索引擎
 <a href="filePath.html#idName"></a>
 ```
 
+### img元素与map元素
 
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style></style>
+</head>
+
+<body>
+    <a target="_blank" href="https://baike.baidu.com/item/%E5%A4%AA%E9%98%B3%E7%B3%BB/173281">
+        <img usemap="#solarMap" src="./c2fdfc039245d688d43fc8c7c29b6a1ed21b0ef48e05.webp" alt="太阳系">
+    </a>
+
+    <map name="solarMap">
+        <area shape="circle" coords="345,145,50" href="https://baike.baidu.com/item/%E6%9C%A8%E6%98%9F/222105" alt="木星" target="_blank">
+    </map>
+</body>
+
+</html>
+```
+
+### 元素的包含关系
+
+1. 容器元素中可以包含任何元素
+2. a 元素中几乎可以包含任何元素
+3. 某些元素有固定的子元素
+4. 标题元素和段落元素不能相互嵌套，并且不能包含容器元素
+
+### 站内资源和站外资源
+
+站内资源：当前网站的资源
+
+站外资源：非当前网站的资源
+
+### 绝对路径和相对路径
+
+站外资源：绝对路径
+
+站内资源：相对路径、绝对路径
+
+绝对路径的书写格式
+
+```
+协议名://主机名:端口/path
+schema://host:port/path
+```
+
+当绝对路径的协议与当前页面的协议是相同的时候，协议可以省略，协议名和冒号（http:）可以省略
+
+协议名：http、https、file(html从本地双击打开会是file协议)
+
+主机名：域名、IP地址
+
+端口号：如果协议是http协议，默认端口号为80；如果协议是https，默认端口号是443。默认端口是可以省略的
+
+相对路径书写格式
+
+以 ./  开头，表示当前资源的文件目录
+
+可以用 ../ 返回上一级目录
+
+相对路径中 ./ 是可以省略的
 
 ### 快捷键
 
