@@ -103,7 +103,7 @@ webkit最开始是有chrome和safari一起研发的，后来因为版权问题�
 
 0. margin 和 position 是可以叠加使用的
 1. 绝对定位：absolute，脱离文档流，不保留原来的位置。相对最近的有定位的父级元素定位，如果所有父级元素都没有定位，就相对文档定位。
-2. 相对定位：relative，也脱离文档流，但是保留原来的位置。相对于自己原来的位置定位的。
+2. 相对定位：relative，<del>也脱离文档流</del>，但是保留原来的位置。相对于自己原来的位置定位的。
 3. 固定定位：fixed
 4. 值为百分比的话，相对于谁定位，就是谁的百分比
 
@@ -168,7 +168,11 @@ webkit最开始是有chrome和safari一起研发的，后来因为版权问题�
 1. 使用BFC解决，添加一个父元素（是某一个元素的父元素），触发父元素的BFC
 2. 一般不解决，不能因为解决bug，而去随意的修改html（结构），结构一动，可能引起一系列问题
 
-## 14.float（浮动模型）
+## 14.body的margin合并
+
+根据CSS规范，如果html元素没有设置背景色，那么body的背景色会覆盖整个画布（即整个视口）。而如果html元素设置了背景色，那么body的背景色就只覆盖body的内容区域。
+
+## 15.float（浮动模型）
 
 1. float：right的时候。元素会倒序，比如left的时候为123，那么right的时候就是321，但是如果元素比较多的时候，1,2,3,4,5,6,7,8,9，right的时候就是：第一行321、第二行654、第三行987
 2. 浮动的基础上可以叠加margin
@@ -177,7 +181,7 @@ webkit最开始是有chrome和safari一起研发的，后来因为版权问题�
 5. 浮动元素不会占据父元素的100%，而是由子元素撑开的（即使float元素会自动变成block，宽度也不是100%，也是撑开）
 6. 浮动元素会使元素的display变为bloak，但是属性与inline-block很像
 
-## 15.伪元素
+## 16.伪元素
 
 <del>伪元素其实一直都存在（），我们只是通过选择器去选择它，然后操作他的样式</del>
 
@@ -185,11 +189,11 @@ webkit最开始是有chrome和safari一起研发的，后来因为版权问题�
 
 伪元素默认是 inline 元素
 
-## 16.float和position的特点
+## 17.float和position的特点
 
 凡是 设置了position：absolute 或 float：left 、right的元素，打内部把元素转换成block，虽然它是block，但是宽高都是根绝内容撑开的，不会与父元素的宽一样
 
-## 17.文字溢出处理
+## 18.文字溢出处理
 
 单行文本
 
@@ -201,7 +205,7 @@ text-overflow: ellipsis;
 
 多行文本没有更好的办法，至少css2没有更好的办法
 
-## 18.图片代替文字
+## 19.图片代替文字
 
 当网速不好的情况下，放弃下载css和javascript，只下载html，这种情况下，怎样展示文字
 
@@ -466,7 +470,7 @@ padding：水平方向正常，但是垂直方向能显示，只影响背景，�
 
 border：水平方向正常，但是垂直方向只只能显示边框，但是不会占据空间
 
-margin：水平方向正常，但是垂直方法完全无效
+**margin：水平方向正常，但是垂直方法完全无效**
 
 line-height：可以影响高度，但是背景不会跟着高度变化，背景还是跟内容一样高
 
@@ -543,3 +547,129 @@ padding、width、margin
 4. 上下外边距合并
 
 两个常规流块盒的上下外边距会合并
+
+## 浮动
+
+ 应用场景
+
+- 文字环绕
+
+- 横向排列
+
+默认值：none
+
+1. 浮动元素的包含块，和常规流一样，为父元素的内容盒
+
+盒子尺寸
+
+1. 宽度为auto时，表示适应内容宽度
+2. 高度为auto时，与常规流一致，适应内容高度
+3. margin为auto，为0
+4. 边框、内边距、百分比与常规流一样
+
+盒子排列
+
+1. 左浮动盒子靠左靠上排列
+
+2. 右浮动盒子靠右靠上排列
+
+3. 在包含快中排列时，会避开常规流的块盒子
+
+4. 常规流块盒在排列时，无视浮动盒子
+
+5. ```html
+   <div class="wrap">
+     <div class="conventional"></div>
+     <div class="content">1</div>
+     <div class="content">2</div>
+     <div class="content">3</div>
+     <div class="content">4</div>
+     <div class="content">5</div>
+     <div class="content">6</div>
+     <div class="content">7</div>
+     <div class="content">8</div>
+     <div class="content">9</div>
+     <div class="content">10</div>
+      <!--<div class="conventional"></div>-->
+   </div>
+   <style>
+       .conventional{
+     		height: 50px;
+     		background-color: pink
+   	}
+   	.content {
+     		width: 100px;
+     		height: 100px;
+     		background-color: gainsboro;
+     		float: left;
+   	}
+   </style>
+   ```
+
+6. 如果文字没有在行盒中，浏览器会自动生成一个行盒包裹文字，该行盒为匿名行盒
+
+7. 高度坍塌的根源：常规流盒子 的自动高度，在计算时，不会考虑浮动盒子
+
+8. 清除浮动：该元素必须出现在前面所有浮动元素的下方（必须是块盒
+
+9. 浮动盒子里面不会发生margin合并
+
+```html
+<div class="wrap">
+  <div class="left">测试：</div>
+  <div class="right">
+    <div class="item">aaa</div>
+    <div class="item">aaa</div>
+    <div class="item">aaa</div>
+    <div class="item">aaa</div>
+    <div class="item">aaa</div>
+    <div class="item">aaa</div>
+    <div class="item">aaa</div>
+    <div class="item">aaa</div>
+    <div class="item">aaa</div>
+    <div class="item">aaa</div>
+    <div class="item">aaa</div>
+    <div class="item">aaa</div>
+    <div class="item">aaa</div>
+    <div class="item">aaa</div>
+    <div class="item">aaa</div>
+    <div class="item">aaa</div>
+  </div>
+</div>
+```
+
+```css
+.left {
+  float: left;
+}
+.right {
+  float: left;
+  /* width: 600px; */  /*如果没有这个定宽，right盒子会换行，因为宽度太宽了，left的这一行显示不下*/
+}
+.right .item {
+  float: left;
+  width: 80px;
+  height: 30px;
+  background-color: pink;
+  margin: 5px 10px;
+}
+```
+
+![示例](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA0MAAADHCAIAAABUax/rAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAM60lEQVR4nO3df2yV9aHH8edYxNFWu6akYIEiZXiFm10EUTRgZBiJjhgSXJaBBKdIVBqS6siYLm5sLgGjS/hDozMZBozGRIEEJVYhzJli3KwwYaZAbmKqQGkVKKVdEU577h+9cViO7Nuf8j28Xn/BeTiH53z+eudpz3lSmUwmAQAgQpd81ycAAEAvKTkAgFgpOQCAWCk5AIBYKTkAgFgpOQCAWCk5AIBYKTkAgFgNOfeh1ra2zw81HG9u6ezs/C5OCQCA/3fJJZcUf/+KMaOuLCwoOPdoqts9Hlrb2vZ8sn/c2NGlw0vy8vIG8TwBAOiuo6Oj6cujn9Yf/J///q9zY657ydUd+N/vF11x5YjSwT1JAAC+VUNjU/OJlolX/6Db491/T+54c0vp8JJBPDEAAP6D0uElx5tbzn28e8l1dnb6oSoAwAUlLy8v6wcYfHYVACBWA15yp06damxsPHPmzED/RwAAF5vsJVdbW7t06dKDBw+e55l79+69+eab9+7dmyRJW1vb3XffvWLFinOLbdu2bRUVFUuXLp00aVJ9fX2/njwAwEUte8nl5+d//PHHFRUVTzzxxKhRo1Jnueeeew4dOvTWW2+dOHGivr7+9OnTSZIUFBQsXLjwueeeq6yszHr57YEHHpg+ffqSJUtOnDgx8G8KAOCikL3kJk2atHPnzlWrVp04cSKVSm3ZsiWTyWQymcWLFydJsmvXrgcffPD48eNnP2Xu3LkbNmx44403Pvzww7MfLy4uLiwsHDp06OOPPz5t2rRUKjXA7wgA4GKR5R4PXS699NLHHnusoaHhtddeO3ny5KxZs+64447zv9b8+fNvv/32Z555ZsaMGd0OTZs2resPxcXFK1euTJLk6NGjd955Z11d3dtvv33DDTf0x3sBALi4ZLkmd+bMmZdeeun8vyTX7d83NjY2NDQcOXIkk8lUVlYePkt1dfWwYcPWr1/f9dfKysquZzU1Ne3fv7+5uXn37t39+o4AAC4WWUqusbFx06ZN5eXly5cvb2nJ8h103ezZs6eioqKsrKysrOzZZ58tLCy88iwTJkwoKirKy8vr+mthYWHXs6655podO3a88847XT+xBQCgp7KU3OjRozdt2rR9+/avvvqq2728srruuuva2toOHz5cXl6eJElra+usWbO+/oTEfffdN3To0HOv8KVSqcmTJ992223Dhg3rv7cDAHARyf6Jh1QqNXv27BdeeKGoqKinr1hQULBx48bq6uqysrLq6up169aVlpYeOnSoP84WAIB/+9ZvBm5tbX311Vfb29t7+oqpVKqkpGT48OF5eXnDhw8fMWJEUVHR4cOH0+l0n88WAIB/+9aSq6mpWbx48bvvvpskSSaT6ejoGD16dC/+g4KCgquuuqq+vv7kyZN9O1UAAL4h+7eQpNPp9evXT5069dZbbz1w4EA6nf7ss88qKiqWLVuWJMlll122YMGCrL/f1tzcvGzZsilTpkydOrWzs3Pbtm1vvvnm+PHjN2/efOTIkZUrV06ZMuWhhx7qqsM9e/Y0NTXNnDnTr8oBAPRC9mty+/btq66uXrRo0dixY1evXr179+6hQ4dWVVUdPHhw+vTp11577Zo1a4qLi89+Snt7++nTp9esWbNx48aampr777//0KFDTz755Jdffjlx4sTW1taamppjx459/dGHffv2zZ49e86cORs2bBiUdwoAkGuyXJPLZDLPP/98QUHB3Llz29vbn3rqqZdffnnr1q1JksybNy9JkrvuuqvbU9Lp9Lp165qamlavXr1o0aKqqqoFCxZs3rx57NixqVSqtbX1pptuevjhh9Pp9NffOVJSUjJ27NjOzs4pU6YMyjsFAMg1WUounU6PGzeuqqqqvLx8xYoVO3fu3Llz59VXX50kydq1a7ds2TJ+/Pg5c+Z88cUXM2bMGDNmTJIkQ4YMuffee+fPnz916tQkSV5//fWzX7CwsPDpp5+eN2/exIkTb7nllq4HS0tLd+3aNVhvEwAgB6W6fWNczQe1M2+c9t2dDwAAWWSNtG/97CoAABc4JQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAEKss93j4D/5aOyAncsG6pQ/fk2yrcLYKZ6twtgpnq3C2CmergeeaHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKx6U3ItbW2/ffFPo37y49Ss61Ozrv/pqkePHDval0M5zFbhbBXOVuFsFc5W4WwVzlYDrTclt+X9917Z/vYfl1V9/trW5x95dON7O/7w0p8zmUyvD+UwW4WzVThbhbNVOFuFs1U4Ww20VLddaj6onXnjee8a9s17qKU7On72u8fqGxveefqZ4suv6PuhC07/3W/OVudjq3C2CmercLYKZ6twtupXWSNtSK9frrX9X7X76/6yu/ajA3Wdmcyp06f7eCiH2SqcrcLZKpytwtkqnK3C2Wrg9Oanq8daWhb8/tdFc3+06sUXRhSXjCkd2cdDOcxW4WwVzlbhbBXOVuFsFc5WA63H1+TSHR2Va5/8+75P9m14fcLoMUmS/K3un/WNDb0+lMNsFc5W4WwVzlbhbBXOVuFsNQh6fE3ui+bj73+yZ+YPr+0aN5PJpDs6+nIoh9kqnK3C2SqcrcLZKpytwtlqEPS45C7Pzx83suzdf3y0Y9eHdfWf3vWbX76yvbovh3KYrcLZKpytwtkqnK3C2SqcrQZBj0uucFj+2uW/yL/se7c+smzykoXlI0b+auHP+3Ioh9kqnK3C2SqcrcLZKpytwtlqEPT1W0hyX/99+jr32SqcrcLZKpytwtkqnK3CfRffQuJuXQAAsVJyAACxUnIAALFScgAAsVJyAACxUnIAALFScgAAsVJyAACxUnIAALFScgAAser53boAABh07tYFAJBTlBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArIb0+Bl/rR2QE7lg3dKHO17YKpytwtkqnK3C2SqcrcLZauC5JgcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABCr3pRcS1vbb1/806if/Dg16/rUrOt/uurRI8eO9uVQDrNVOFuFs1U4W4WzVThbhbPVQOtNyW15/71Xtr/9x2VVn7+29flHHt343o4/vPTnTCbT60M5zFbhbBXOVuFsFc5W4WwVzlYDLdVtl5oPamfeeN67hn3zHmrpjo6f/e6x+saGd55+pvjyK/p+6ILTf/ebs9X52CqcrcLZKpytwtkqnK36VdZIG9Lrl2tt/1ft/rq/7K796EBdZyZz6vTpPh7KYbYKZ6twtgpnq3C2CmercLYaOL356eqxlpYFv/910dwfrXrxhRHFJWNKR/bxUA6zVThbhbNVOFuFs1U4W4Wz1UDr8TW5dEdH5don/77vk30bXp8wekySJH+r+2d9Y0OvD+UwW4WzVThbhbNVOFuFs1U4Ww2CHl+T+6L5+Puf7Jn5w2u7xs1kMumOjr4cymG2CmercLYKZ6twtgpnq3C2GgQ9LrnL8/PHjSx79x8f7dj1YV39p3f95pevbK/uy6EcZqtwtgpnq3C2CmercLYKZ6tB0OOSKxyWv3b5L/Iv+96tjyybvGRh+YiRv1r4874cymG2CmercLYKZ6twtgpnq3C2GgR9/RaS3Nd/n77OfbYKZ6twtgpnq3C2CmercN/Ft5C4WxcAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKx6frcuAAAGnbt1AQDkFCUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABArJQcAECslBwAQKyUHABCr/wOPlbx3iYIgGQAAAABJRU5ErkJggg==)
+
+## 定位
+
+手动控制元素在包含块中的精准位置
+
+相对定位
+
+margin与reactive的区别：margin也属于盒子模型的一部分，块盒模型会自动占满包容和的内容区（width），如果设置了margin，那么盒子的width会变小，因为margin也需要空间，也说与盒子模型，但是reactive不会
+
+左右冲突一左边为准，上下冲突一上面为准
+
+绝对定位
+
+1.宽度为auto，适应内容
+
+2.包含块变化：找祖先元素中第一个定位元素，该元素的填充盒为其包含块 。若找不到，则他的包含块就是整个网页（初始包含块）
+
