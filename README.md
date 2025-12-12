@@ -42,7 +42,7 @@ git config --global --unset https.proxy
 
 # 或者如果你需要代理，正确设置代理
 git config --global http.proxy http://127.0.0.1:7890
-git config --global http.proxy http://127.0.0.1:7890
+git config --global https.proxy http://127.0.0.1:7890
 ```
 
 ## 方法C：修改git超时设置
