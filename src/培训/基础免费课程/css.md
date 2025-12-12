@@ -673,3 +673,195 @@ margin与reactive的区别：margin也属于盒子模型的一部分，块盒模
 
 2.包含块变化：找祖先元素中第一个定位元素，该元素的填充盒为其包含块 。若找不到，则他的包含块就是整个网页（初始包含块）
 
+固定定位
+
+其他情况和绝对定位一样
+
+包含块不同：固定为视口（浏览器的可视窗口）
+
+视口与整个网页的区别：视口就是浏览器的可见区域，整个网页是整个html，整个网页的宽高可能比视口的宽高大，此时会出现滚动条
+
+定位下的居中
+
+某个方向居中：
+
+1.定宽（高）
+
+2.将左右（上下）距离（left、right、top、bottom）设置为0
+
+3.将左右（上下）margin设置为0
+
+绝对定位和固定定位中，margin为auto时，会自动吸收剩余空间
+
+多个定位元素重叠时
+
+堆叠上下文：暂时不讲
+
+设置z-index，通常情况下，这个值越大，越靠近用户
+
+只有定位元素设置z-index有效
+
+z-index可以是负数，如果是负数，则遇到常规流、浮动流，会被覆盖
+
+绝对定位、固定定位一定是块盒，宽高根据内容撑开
+
+绝对定位、固定定位元素一定不是浮动，绝对定位、固定定位优先级高于浮动
+
+绝对定位、固定定位没有外边距合并
+
+## 透明
+
+rgba：红 绿 蓝 alpha(阿尔法透明通道0~1)
+
+hex：#红 绿 蓝 透(0~ff)
+
+## 更多伪类选择器
+
+1. first-child：选中第一个子元素
+
+```html
+<!DOCTYPE html>
+<html lang="cmn-hans">
+    <head>
+        <meta charset="utf-8">
+    <title></title>
+    <style type="css/stylesheet">
+        a:first-child {
+            color:red;
+        }
+    </style>
+    </head>
+    <body>
+        <div>
+            <nav>
+                <p>
+                    选中a元素，并且a元素必须是第一个子元素，
+                    该示例没有满足条件的元素
+                </p>
+                <a href=""></a>
+                <a href=""></a>
+                <a href=""></a>
+            </nav>
+        </div>
+    </body>
+</html>
+```
+
+```html
+<!DOCTYPE html>
+<html lang="cmn-hans">
+    <head>
+        <meta charset="utf-8">
+    <title></title>
+    <style type="css/stylesheet">
+        a:first-child {
+            color:red;
+        }
+    </style>
+    </head>
+    <body>
+        <div>
+            <nav>
+                <a href="">此元素满足条件</a>
+                <a href=""></a>
+                <a href=""></a>
+            </nav>
+        </div>
+    </body>
+</html>
+```
+
+这样才可以选中第一个a元素
+
+1. last-child：选择最后一个子元素
+2. nth-child：选中指定位置的子元素，与first-child和last-child相似（必须是某个元素，且必须是第几个，even偶数，odd奇数）
+3. nth-of-type：选中指定的元素中第几个子元素
+4. first-of-type：选中子元素中第一个自定类型的元素
+
+```html
+<!DOCTYPE html>
+<html lang="cmn-hans">
+    <head>
+        <meta charset="utf-8">
+    <title></title>
+    <style type="css/stylesheet">
+        a:first-of-type {
+            color:red;
+        }
+    </style>
+    </head>
+    <body>
+        <div>
+            <nav>
+                <p>选中的是子元素中第一个a元素</p>
+                <a href=""></a>
+                <a href=""></a>
+                <a href=""></a>
+            </nav>
+        </div>
+    </body>
+</html>
+```
+
+
+
+## 更多伪元素选择器
+
+1. first-letter：选择元素中的第一个字母或文字
+2. first-line：选择元素中第一行文字
+3. selection：选中被用户框选的文字
+
+## 更多的样式
+
+鼠标
+
+cursor：使用图片最为光标的时候，图片一般为.ico或者.cur结尾，auto表示如果浏览器不支持的话，就是用默认的，类似于font-fimily
+
+```css
+cursor: url("./imgs/target.ico"), auto;
+```
+
+背景
+
+img元素是html的概念
+
+背景图属于css的概念
+
+1.当图片属于网页内容时，必须使用img元素
+
+2.当图片仅用于美化页面时，使用背景
+
+设计的css属性
+
+1. background-image
+
+2. background-repeat
+
+3. background-size
+
+   1. 预设值：contain、cover，类似于object-fit
+   2. 数值或百分比
+
+4. background-position
+
+   1. 预设值：center、top、left、right、bottom分别设置横纵向的位置
+   2. 百分比或数字：可以为负数
+
+5. background-attachment
+
+   1. 通常用它控制背景图是否固定，当body中的文字特别多的时候，出现滚动条，滚动滚动条的时候，背景图被翻上去了，设置background-attachment: fixed;有点像固定定位一样
+
+   ```css
+   body {
+       background-image: url("imgs/main_bg.jpg");
+       background-repeat: no-repeat;
+      	background-size: 100%;
+       background-attachment: fixed;
+   }
+   ```
+
+6. 背景色与背景图可以混在一起用，背景图会在背景色的上面
+
+7. 符合写法
+
+   background: url no-repeat position/size attachment color
