@@ -1,611 +1,551 @@
-# @规则
+# CSS 进阶笔记
 
-@import "路径"：在css文件中导入另一个css文件
+> **阅读提示**：本文档涵盖 CSS 进阶核心概念，包含 `@规则`、BFC、堆叠上下文、SVG、兼容性处理及居中方案等内容。标注 `⚠️ 注意`、`💡 提示`、`📌 补充` 的区块为作者追加的说明或修正。
 
-@charset "utf-8"：告诉浏览器，该css文件，使用的字符编码集是utf-8，该指令必须写在css文件的最上面，否则会报错
+---
 
-# web字体和图标
+## 目录
 
-## web字体
+1. [@规则](#1-规则)
+2. [Web 字体与图标](#2-web-字体与图标)
+3. [块级格式化上下文 (BFC)](#3-块级格式化上下文-bfc)
+4. [CSS 布局](#4-css-布局)
+5. [行高 (line-height) 与继承](#5-行高-line-height-与继承)
+6. [Body 背景与画布 (Canvas)](#6-body-背景与画布-canvas)
+7. [行盒的垂直对齐](#7-行盒的垂直对齐)
+8. [参考线 — 深入理解字体](#8-参考线--深入理解字体)
+9. [堆叠上下文 (Stacking Context)](#9-堆叠上下文-stacking-context)
+10. [SVG 可缩放矢量图形](#10-svg-可缩放矢量图形)
+11. [数据链接 (Data URL)](#11-数据链接-data-url)
+12. [浏览器兼容性](#12-浏览器兼容性)
+13. [居中方案总结](#13-居中方案总结)
+14. [样式补充](#14-样式补充)
 
-解决用户电脑上没有安装相应字体的时候，强制让用户下载该字体
+---
 
-（从我们的网站上下载该字体，临时安装、关闭浏览器就没了）
+## 1. @规则
 
-制作一个新字体：字体一般用.ttf文件，但是为了兼容不同的客户端，使用多个字体：.ttf\.woff等等
+CSS 的 `@规则`（At-rules）用于提供元数据、条件逻辑或引入外部资源。
+
+### 1.1 @import — 导入外部样式表
 
 ```css
-@font-face{
-    font-family: "good night";
-    src:url("./font/晚安体.ttf")
-    src:url("./font/晚安体.woff")
+@import url("路径");
+/* 或 */
+@import "路径";
+```
+
+| 要点 | 说明 |
+|------|------|
+| 作用 | 在 CSS 文件中导入另一个 CSS 文件 |
+| 位置 | 必须写在**除 `@charset` 外**的所有规则之前 |
+| 性能 | 会额外触发 HTTP 请求，现代开发更推荐使用 `<link>` 标签引入 CSS |
+
+> ⚠️ **注意**：原笔记中 `@import "路径"` 的写法缺少 `url()` 包裹，虽然部分浏览器支持字符串写法，但标准语法建议用 `url("...")`。
+
+### 1.2 @charset — 声明字符编码
+
+```css
+@charset "utf-8";
+```
+
+| 要点 | 说明 |
+|------|------|
+| 作用 | 告诉浏览器该 CSS 文件使用的字符编码 |
+| 位置 | **必须写在 CSS 文件最顶部**，前面不能有任何字符（包括注释） |
+| 必要性 | 如果 HTML 已通过 `<meta charset="utf-8">` 声明，通常可省略 |
+
+### 1.3 @font-face — 自定义字体（见下节）
+
+---
+
+## 2. Web 字体与图标
+
+### 2.1 Web 字体 (@font-face)
+
+当用户电脑未安装特定字体时，可强制浏览器从服务器下载字体文件临时使用（关闭页面后失效）。
+
+#### 字体格式
+
+现代 Web 字体通常需要提供多种格式以兼容不同浏览器：
+
+| 格式 | 扩展名 | 说明 |
+|------|--------|------|
+| TrueType | `.ttf` | 基本格式，IE9+ 支持 |
+| Web Open Font Format | `.woff` | 主流格式，压缩率高，现代浏览器均支持 |
+| WOFF 2.0 | `.woff2` | 更优的压缩率，推荐优先使用 |
+| Embedded OpenType | `.eot` | IE 专用格式（IE6-IE8） |
+| SVG 字体 | `.svg` | 仅用于旧版 iOS Safari |
+
+#### 基本用法
+
+```css
+@font-face {
+  font-family: "good night";
+  src: url("./font/晚安体.woff2") format("woff2"),
+       url("./font/晚安体.woff") format("woff"),
+       url("./font/晚安体.ttf") format("truetype");
+  font-display: swap; /* 💡 提示：字体加载期间使用后备字体，避免空白闪烁 */
 }
-/*使用字体*/
+
+/* 使用字体 */
 p {
-    font-family: "good night"
+  font-family: "good night", sans-serif;
 }
 ```
 
-## 字体图标
+> ⚠️ **注意**：原笔记代码存在语法错误——多条 `src` 之间缺少逗号 `,`，且最后一条声明后应有分号 `;`。已在上方案例中修正。
 
-国内做的做好的是：iconfont.cn（阿里巴巴矢量图标库） 
+> 📌 **补充**：`font-display` 属性可控制字体加载行为：
+> - `auto`：浏览器默认
+> - `swap`：先显示后备字体，加载完成后再切换（推荐）
+> - `block`：短暂隐藏文本，加载后显示
+> - `fallback`：介于 swap 和 block 之间
 
-# 块级格式化上下文
+### 2.2 字体图标
 
-Block Formatting Context 简称 BFC
+使用字体文件来展示图标，本质是文字，因此可以方便地通过 `color`、`font-size`、`text-shadow` 等 CSS 属性控制样式。
 
-BFC渲染区域：
+| 平台 | 网址 | 特点 |
+|------|------|------|
+| **Iconfont** | [iconfont.cn](https://www.iconfont.cn) | 阿里巴巴矢量图标库，国内使用最广泛 |
+| Font Awesome | [fontawesome.com](https://fontawesome.com) | 国际主流，功能丰富 |
+| Material Icons | [fonts.google.com/icons](https://fonts.google.com/icons) | Google 官方设计体系 |
 
-这个区域由某个HTML元素创建，以下元素会在其内部创建BFC区域（部分）：
+---
 
-- 根元素：意味着html元素创建的BFC区与，覆盖了网页中所有元素
-- 浮动和绝对定位元素/固定定位
-- overflow不等于visible的块盒
-- 浮动元素
-- display等于inline-block
+## 3. 块级格式化上下文 (BFC)
 
-同一个和bfc中的子元素才会出现外边距合并，不同的bfc中的元素外边距是不会合并的（创建bfc的元素，不会和它的子元素进行外边距合并）
+**Block Formatting Context**，简称 **BFC**，是 CSS 中一个独立的渲染区域，内部元素的布局不会影响外部，反之亦然。
 
-# 布局
+### 3.1 创建 BFC 的条件
 
-## 多栏布局
+以下元素/样式会在其内部创建新的 BFC 区域：
+
+| 条件 | 说明 |
+|------|------|
+| 根元素 (`<html>`) | 整个页面最大的 BFC，覆盖所有元素 |
+| 浮动元素 (`float: left / right`) | `float` 值不为 `none` |
+| 绝对/固定定位元素 (`position`) | `position` 值为 `absolute` 或 `fixed` |
+| `overflow` 不为 `visible` | 值为 `hidden`、`auto`、`scroll` 等 |
+| `display` 为特定值 | `inline-block`、`table-cell`、`table-caption`、`flex`、`inline-flex`、`grid`、`inline-grid` |
+| `contain` 值为 `layout` / `content` / `paint` | 现代浏览器支持的属性 |
+| 多列容器 | `column-count` 或 `column-width` 不为 `auto` |
+
+> 📌 **补充**：原笔记只列举了部分条件，且"浮动元素"和"浮动和绝对定位元素"有重复，已重新分类整理。
+
+### 3.2 BFC 的核心特性与应用
+
+1. **阻止外边距折叠（Margin Collapse）**
+   - 同一个 BFC 中的相邻块级子元素会发生外边距合并。
+   - **不同 BFC** 中的元素外边距不会合并。
+   - **创建 BFC 的父元素**不会与其子元素发生外边距合并。
+
+2. **清除浮动影响**
+   - BFC 可以包裹住内部的浮动元素，从而解决父元素高度塌陷问题。
+
+3. **阻止元素被浮动元素覆盖**
+   - 非浮动的 BFC 元素不会与浮动元素重叠，常用于多栏布局。
+
+---
+
+## 4. CSS 布局
+
+### 4.1 多栏布局
+
+#### 方案一：Float + Overflow（BFC）
+
+左侧固定宽度，右侧自适应。
 
 ```html
 <div class="main">
-    <div class="left"></div>
-    <div class="right"></div>
+  <div class="left"></div>
+  <div class="right"></div>
 </div>
 ```
 
 ```css
 .main {
-    width: 90%;
-    height: 50px;
-    background-color: lightblue;
-    margin: 0 auto;
-    background-clip: content-box;
+  width: 90%;
+  margin: 0 auto;
 }
 .main .left {
-    width: 250px;
-    height: 50px;
-    background-color: lightcoral;
-    float: left;
+  width: 250px;
+  float: left;
+  background-color: lightcoral;
 }
 .main .right {
-    overflow: hidden;
-    height: 50px;
-    background-color: lightpink;
+  overflow: hidden; /* 触发 BFC，不与浮动重叠 */
+  background-color: lightpink;
 }
 ```
 
+#### 方案二：Float + Margin
+
 ```html
 <body>
-    <div class="right"></div>
-    <div class="left"></div>
+  <div class="right"></div>
+  <div class="left"></div>
 </body>
 ```
 
 ```css
 .right {
-    width: 300px;
-    height: 50px;
-    background-color: pink;
-    float: right;
+  width: 300px;
+  float: right;
+  background-color: pink;
 }
 .left {
-    height: 50px;
-    background-color: lightblue;
-    margin-right: 300px;
+  margin-right: 300px; /* 给右浮动留出空间 */
+  background-color: lightblue;
 }
 ```
 
-传统的等高布局
+> 💡 **提示**：在现代项目中，推荐使用 **Flexbox** 或 **Grid** 实现多栏布局，代码更简洁且语义更清晰。
+
+### 4.2 等高布局（传统方案）
+
+利用 **正负 margin + padding** 技巧实现视觉等高。
 
 ```html
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        .clearfix::after {
-            content: "";
-            display: block;
-            clear: both;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-        }
-
-        .main {
-            width: 1200px;
-            margin: 0 auto;
-            overflow: hidden;
-        }
-
-        .main .left {
-            width: 300px;
-            height: 10000px;
-            margin-bottom: -9990px;
-            background-color: pink;
-            float: left;
-        }
-
-        .main .right {
-            margin-left: 300px;
-            background-color: lightblue;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="main clearfix">
-        <div class="left"></div>
-        <div class="right">
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Provident, ut? Quos et consequuntur delectus natus
-            earum saepe deleniti aut, odit laboriosam sint asperiores rem tempore accusantium, veniam aperiam laborum
-            consectetur.
-            Maxime deserunt voluptatibus perferendis placeat doloremque a corrupti illum in omnis expedita
-            necessitatibus sint ad nulla dolorum recusandae beatae assumenda voluptas debitis illo, veniam similique
-            earum eaque rerum. A, dolorum?
-            Minima vero reprehenderit quibusdam est tempora natus rem laudantium, architecto accusantium labore fuga
-            vitae dicta nobis voluptatibus perferendis nulla! Ratione, blanditiis a? Provident blanditiis velit nihil
-            esse vitae! Incidunt, distinctio.
-            Velit, non modi in culpa eveniet ratione nihil consectetur numquam, aperiam mollitia nulla ea dolores illum
-            animi error a quaerat eligendi consequatur iusto recusandae inventore placeat, totam possimus asperiores?
-            Architecto.
-            Quo illo reprehenderit enim consectetur ipsum dolor magnam neque amet voluptates, nihil quaerat rerum modi
-            quisquam harum qui itaque veniam nesciunt, officia culpa! A ipsum asperiores commodi? Omnis, officia iure.
-            Similique dolores a laudantium qui illum dolore incidunt sit dolor illo dolorem aliquid saepe dicta eveniet
-            neque cum nisi iure modi, doloribus error itaque mollitia repellat. Maxime quae omnis beatae.
-            Tempora beatae doloremque voluptate optio deserunt placeat laborum reiciendis ipsam tempore dolore
-            architecto sit odio, incidunt minima! Molestiae, voluptas eligendi ipsum consequuntur cum hic fugiat ab
-            voluptate tenetur magnam labore?
-            Eligendi illo aut autem eos asperiores, ipsum deserunt aspernatur impedit error atque corrupti.
-            Reprehenderit aliquid eos repellendus numquam culpa modi nobis magni. Culpa sequi numquam ipsa cupiditate
-            similique quasi sapiente!
-            Quod, aspernatur ut delectus harum cumque est neque voluptas quidem ratione tenetur. Ad eos veritatis
-            explicabo. Corporis a cum unde et sit, iure fugiat. Nulla, quas? Ullam molestiae laborum obcaecati?
-            Velit, dolor. Minima ratione illo, accusantium earum reiciendis aut fugiat deserunt autem explicabo,
-            inventore minus aperiam distinctio numquam unde. Temporibus cupiditate magni blanditiis molestias quae
-            autem, tempora corporis amet dicta!
-            Eos, earum distinctio! Omnis aliquam, vel earum laboriosam at excepturi aliquid recusandae. Eligendi sit
-            deserunt vitae molestias natus unde, officiis autem minus architecto ipsa reprehenderit blanditiis. Atque
-            accusamus veritatis minus?
-            Nemo placeat itaque minima beatae libero asperiores voluptatibus dolorum natus consectetur, eveniet repellat
-            at ullam quasi amet cupiditate sunt? Exercitationem molestias nulla placeat minus facere debitis incidunt
-            adipisci, labore excepturi?
-            Delectus, velit sequi, magnam, vitae culpa magni voluptates itaque libero nisi deserunt aliquid natus rem.
-            Ex molestias debitis in impedit laborum! Quisquam, vitae expedita a eum voluptas quam incidunt doloremque.
-            Modi accusamus quaerat nesciunt voluptatem repellendus nihil repellat, magnam officiis rerum ab ipsum velit
-            laboriosam ad. Blanditiis expedita ab vitae fugiat beatae. Pariatur possimus, dicta perspiciatis ullam
-            libero molestias quisquam!
-            Adipisci voluptates reprehenderit nihil a nulla soluta aspernatur, architecto error ut totam explicabo quam
-            iste dolorem unde, odit temporibus, aliquid quia non ipsam similique nesciunt deleniti. Accusantium odit sit
-            eos.
-            Eum perferendis magnam eos in sunt. Earum, saepe. Nisi beatae, saepe perferendis eius reprehenderit velit
-            esse nesciunt. Illum iure commodi nulla eius, dignissimos magnam sint magni rem nemo. Pariatur, placeat.
-            Veritatis vero, dolorem pariatur commodi harum possimus laborum temporibus! Odit debitis unde molestiae
-            harum ullam perspiciatis nemo sed accusamus expedita voluptatum? Repudiandae quos hic neque aliquid
-            deleniti, sit mollitia possimus.
-            Nulla sapiente cupiditate dicta culpa aliquam quo. Fugit illum hic doloribus et voluptas rerum laborum
-            dolorum magnam blanditiis provident magni velit odit quam commodi, nulla iste, quis similique, accusamus
-            quia?
-            Quis neque, repellendus asperiores enim repellat libero quasi iure perferendis laboriosam debitis earum
-            ducimus consectetur sunt magnam praesentium possimus voluptatem dolor labore provident aperiam! Facilis rem
-            voluptates quis est explicabo?
-            Odio vero eaque, atque similique ratione rerum nisi amet, accusantium, voluptates nam omnis non dignissimos
-            cumque pariatur quod eveniet optio enim voluptatem! Dolorem perspiciatis repellat ea aspernatur, quis fuga
-            minus!
-            Reprehenderit vitae in fuga nesciunt? Neque, maxime. A harum esse qui, rem, veniam architecto iusto quasi
-            omnis unde amet placeat fugit suscipit. Minus, accusamus suscipit reiciendis enim debitis nulla vero!
-            Eaque alias debitis, quam magnam eum odio quia eos adipisci. Repellendus delectus in expedita rem dolorem,
-            impedit consectetur eveniet cumque. Id pariatur eligendi error autem sit! Vitae quas ut facere.
-            Porro quos et quae mollitia in, laudantium nostrum pariatur natus! Vitae nulla mollitia ullam ut quo eaque
-            eligendi eveniet doloribus aspernatur nihil odio consequatur sit facilis omnis, incidunt placeat suscipit.
-            Quaerat rerum quasi excepturi veniam. Consequuntur non at amet quisquam tempora impedit expedita fuga eum
-            aperiam dignissimos, enim doloribus veniam. Nam similique est doloribus illum dolore quam quibusdam
-            dignissimos magnam!
-            Necessitatibus hic dolorum ea, explicabo atque in et laborum expedita ipsa repellendus asperiores neque,
-            consectetur ut, perferendis esse aliquid. Corporis sint dicta quod aliquid et eligendi cumque ab magni
-            autem?
-            Molestiae sequi distinctio alias architecto recusandae laudantium ratione mollitia ducimus impedit nihil
-            omnis ullam nemo quo quidem iusto nesciunt excepturi, placeat amet doloribus incidunt laboriosam. Possimus a
-            vel atque quasi.
-            Minima sint hic, asperiores quam sit rem itaque. Aliquam rem aspernatur saepe ipsa quod excepturi, aperiam
-            quo quam reprehenderit animi quis natus non molestias praesentium voluptas, facere nam fuga recusandae!
-            Veritatis, quis expedita earum eius nam accusamus, placeat repudiandae sint voluptas cum, architecto quod.
-            Pariatur, modi? Non explicabo adipisci animi vero cum impedit totam officiis ab vel voluptatem! Error,
-            quaerat.
-            Distinctio nesciunt rem est nisi quia quibusdam, iure aliquid, ex eaque atque veniam ullam, repellendus
-            dolorem voluptas illum inventore accusantium. Earum alias, accusantium officiis sapiente obcaecati explicabo
-            quis tempore distinctio.
-            A consequuntur amet odit est nihil maiores facere. Dignissimos, hic nihil veniam est quae ipsam deserunt
-            recusandae alias praesentium cum ut sequi itaque ad soluta facere, distinctio suscipit, ullam debitis.
-        </div>
-    </div>
-</body>
-
-</html>
-```
-
-# 行高
-
-先计算像素值，再继承
-
-```html
-<div class="container">
-  <p class="p1">
-      hfjdhkjshajhfkhdjkhsahjhfjdhshafgfdsgfdsgfd
-    	hdjshajkhfkhfdsaljk
-    </p>
-  <p class="p2">  									   fhjkdsahjkhfjklhdskalkjjfgfdsgfdsgfdsgfdsg			
-  sgfdsgfdsgfdsgfdsgfdsgfdsgfdsgfdsgfdsgfdsgfdsgfdsgfds
-    ggfdsgfdhdhkshahkfdkjhskjahkjhfjkhdjshajk
-    </p>
+<div class="main clearfix">
+  <div class="left">侧边栏</div>
+  <div class="right">
+    主内容区域<br>
+    内容可能很多...<br>
+    内容可能很少...
+  </div>
 </div>
-
 ```
 
 ```css
+.clearfix::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.main {
+  width: 1200px;
+  margin: 0 auto;
+  overflow: hidden; /* 隐藏超出部分 */
+}
+
+.main .left {
+  width: 300px;
+  float: left;
+  padding-bottom: 9999px;   /* 极大 padding */
+  margin-bottom: -9999px;   /* 负 margin 抵消 */
+  background-color: pink;
+}
+
+.main .right {
+  margin-left: 300px;
+  padding-bottom: 9999px;
+  margin-bottom: -9999px;
+  background-color: lightblue;
+}
+```
+
+> 📌 **补充**：原笔记中的示例包含大量无意义的 Lorem ipsum 文本，已精简为示意内容。
+> 该方案的本质是：通过极大的 `padding-bottom` 撑开高度，再用等量的负 `margin-bottom` 拉回，配合父元素 `overflow: hidden` 裁剪，实现视觉等高。
+>
+> **现代替代方案**：使用 Flexbox 的 `align-items: stretch`（默认值）即可天然实现等高，无需此 hack。
+
+---
+
+## 5. 行高 (line-height) 与继承
+
+`line-height` 的继承行为取决于值的类型：
+
+| 值类型 | 继承方式 | 说明 |
+|--------|----------|------|
+| **有单位**（如 `px`、`em`、`%`） | **先计算，再继承** | 父元素先根据自身的 `font-size` 计算出具体像素值，子元素继承这个固定值 |
+| **无单位**（如 `1.5`） | **先继承，再计算** | 子元素先继承这个比例系数，再乘以自身的 `font-size` 计算 |
+
+### 示例对比
+
+```css
+/* 有单位：不推荐 */
 .container {
-  line-height: 2em;
+  font-size: 16px;
+  line-height: 2em; /* 计算为 32px，子元素继承 32px */
 }
 .p1 {
-  font-size: 40px;
-}
-.p2 {
-  font-size: 14px;
+  font-size: 40px;  /* 行高仍为 32px，导致文字重叠 */
 }
 
+/* 无单位：推荐 */
+.container {
+  line-height: 1.5; /* 子元素继承 1.5，再乘以自身 font-size */
+}
+.p1 {
+  font-size: 40px;  /* 行高 = 40 * 1.5 = 60px，比例协调 */
+}
 ```
 
-先计算container的font-size的值为16px（基准字体大小），再继承container的line-height
+> 💡 **提示**：**最佳实践**是为 `body` 或根元素设置无单位的 `line-height`（如 `1.5` 或 `1.6`），这样所有子元素都能按比例获得合适的行高。
 
-有单位的话是先计算，再继承
+---
 
-没有单位的话是先继承，再计算
+## 6. Body 背景与画布 (Canvas)
 
-# body背景
+### 6.1 画布 (Canvas)
 
-**画布 canvas **
+> ⚠️ **注意**：此处的 **Canvas** 不是 HTML5 的 `<canvas>` 元素，而是 CSS 布局概念中的**初始包含块/画布**。
 
-不是html5里面的canvas
+画布特点：
+1. 最小宽度为**视口宽度**（Viewport Width）
+2. 最小高度为**视口高度**（Viewport Height）
 
-特点：
+### 6.2 背景覆盖规则
 
-1. 最小宽度为视口宽度
-2. 最小高度为视口高度
+| 情况 | 背景覆盖范围 |
+|------|-------------|
+| `<html>` 有背景 | `<body>` 正常显示，背景仅覆盖 `<body>` 的边框盒 |
+| `<html>` **无**背景 | `<body>` 的背景会**冒泡**到 `<html>`，进而覆盖整个画布 |
 
-**HTML元素的背景**
+### 6.3 画布背景图的参考系
 
-覆盖画布
+当背景图应用于画布时（通常是 `<body>` 背景冒泡的情况），其定位和大小的参考对象较特殊：
 
-**BODY元素的背景**
+| 属性 | 百分比参考对象 |
+|------|---------------|
+| `background-size` 宽度 | 视口宽度 |
+| `background-size` 高度 | `<html>` 元素高度（非视口高度） |
+| `background-position-x`（百分比/关键字） | 视口宽度 |
+| `background-position-y`（百分比/关键字） | **文档高度**（整个页面内容高度，可能大于视口） |
 
-如果HTML元素有背景，body元素正常，背景覆盖变样盒
+> 📌 **补充**：这是 CSS 规范中的特殊规定，理解这一点对处理全屏背景图或固定背景图很重要。
 
-如果HTML元素没有背景，body元素的背景覆盖背景
+---
 
-**关于画布背景图**
+## 7. 行盒的垂直对齐
 
-1. 背景图的宽度百分比，相对于视口
-2. 背景图高度百分比，相对于html元素
-3. 背景图的横向位置百分比、预设值都是相对于视口
-4. 背景图的纵向位置百分比、预设值都是相对于文档高度
+### 7.1 vertical-align 属性
 
-# 行盒的垂直对齐
+控制**行内元素**（inline / inline-block）在垂直方向上的对齐方式。
 
-## 多个行盒垂直方向上的对齐
+| 值 | 对齐方式 |
+|----|---------|
+| `baseline` | 元素的基线与父元素的基线对齐（默认值） |
+| `top` | 元素的顶部与行内最高元素的顶部对齐 |
+| `bottom` | 元素的底部与行内最低元素的底部对齐 |
+| `middle` | 元素的中线与父元素基线上方 `x` 字符高度的一半对齐 |
+| `text-top` | 元素的顶部与父元素文本的顶部对齐 |
+| `text-bottom` | 元素的底部与父元素文本的底部对齐 |
+| `sub` | 元素的基线与父元素的下标基线对齐 |
+| `super` | 元素的基线与父元素的上标基线对齐 |
+| `<length>` | 相对于基线的偏移量，向上为正，向下为负 |
+| `<percentage>` | 相对于元素自身 `line-height` 的百分比偏移 |
 
-vertical-align
+### 7.2 图片底部白边问题
 
-## 图片的地步白边
+当图片作为行内元素放入块盒时，图片底部与父元素底边之间常出现几像素的空白。
 
-图片的父元素是一个块盒，块盒的高度自动，图片底部和父元素底边之间往往会出现空白
+**原因**：图片默认按 `baseline` 对齐，底部留白是为字母下伸部分（如 `g`、`y`）预留的空间。
 
-1. 设置父元素的font-size为0
-2. 将图片设置为块盒（行块盒都不行）
+**解决方案**：
 
-# 参考线-深入理解字体
+```css
+/* 方案 1：消除文字下沉空间 */
+.parent {
+  font-size: 0;
+}
 
-## 文字
+/* 方案 2：改变图片的显示类型 */
+img {
+  display: block; /* 行块盒 (inline-block) 都不行，必须是 block */
+}
 
-通过文字自作软件做出来的，比如：fontforge
+/* 方案 3：改变垂直对齐方式 */
+img {
+  vertical-align: middle; /* 或 top / bottom */
+}
+```
 
-制作文字时，会有几根参考线，不同的文字类型，参考线是不一样的。同一种文字类型，参考线是一样的
+---
 
-## font-size
+## 8. 参考线 — 深入理解字体
 
-字体大小，设置的是文字的相对大小
+### 8.1 字体设计与参考线
 
-文字的相对大小：金属框尺寸和文字尺寸之间的相对大小，1000、2048、1024，金属框为1000的时候，字体多大，金属框为2048的时候，字体多大
+字体通过专业软件（如 FontForge）设计制作。设计时会定义若干**参考线（Em Square / Metrics）**，不同字体类型的参考线不同，但同类型字体共享相同的参考线体系。
 
-  文字顶线到底线的距离，是文字的实际大小（content-area，内容区），**行盒背景覆盖content-area**
+### 8.2 font-size 的本质
 
-## 行高
+- `font-size` 设置的是**文字的相对大小**，而非实际像素尺寸。
+- 字体设计时基于一个**金属框（Em Square）**，常见尺寸为 `1000`、`1024`、`2048` 等。
+- 文字顶线到底线的距离称为 **content-area（内容区 / 实际文字大小）**。
+- **行盒的背景覆盖 content-area**。
 
-顶线向上延伸的空间，和底线向下延伸的空间，两个空间相等，该空间叫做gap，gap默认情况下，是字体设计者决定的
+### 8.3 行高 (line-height) 的构成
 
-top到bottom之间的距离叫做virtual-area（虚拟区）
+```
+      ↑ 顶线 (Top)
+   ┌──┴──┐  gap（上半部分）
+   │ 文  │
+   │ 字  │  content-area（文字实际区域）
+   │ 内  │
+   └──┬──┘  gap（下半部分）
+      ↓ 底线 (Bottom)
 
-行高就是virtual-area
+   ↑───────↑
+   virtual-area（虚拟区）= line-height
+```
 
-line-height：normal；默认值，使用文字默认的gap
+- **gap**：顶线向上和底线向下的延伸空间，两部分相等。
+- **virtual-area（虚拟区）**：`top` 到 `bottom` 的总距离，即 `line-height`。
+- `line-height: normal`：使用字体设计者预设的默认 gap。
 
->  文字一定出现在一行的最中间-----是错误的
+> ⚠️ **纠正**：原笔记提到"文字一定出现在一行的最中间"是**错误的**。
+> - 正确说法：**content-area 一定出现在 virtual-area 的最中间**。
+> - 但文字在 content-area 内的位置由字体设计者决定，不一定居中。
 
-> content-area一定出现在virtual-area的最中间----是正确的
+### 8.4 vertical-align 的参考线体系
 
-## vertical-align
+决定参考线的因素：**font-size**、**font-family**、**line-height**。
 
-决定参考线：font-size、font-family、line-height
+一个元素如果内部包含行盒，该元素自身也会产生参考线。
 
-一个元素如果子元素出现了行盒，该元素内部也会产生参考线
+#### 行框 (line-box)
 
-baseline：该元素的基线与父元素的基线对齐
+- 每一行文本形成一个 **line-box（行框）**。
+- `line-box` 的顶边 = 该行内所有行盒的**最高顶边**。
+- `line-box` 的底边 = 该行内所有行盒的**最低底边**。
+- 元素的**实际占用高度**由所有 `line-box` 累加决定。
 
-super：该元素的基线与父元素的上基线对齐
+#### 不生成行框的情况
 
-sub：该元素的基线与父元素的下基线对齐
+- 元素内部没有任何行盒（内容为空且没有行内子元素）。
+- 元素的 `font-size: 0`。
 
-text-top：该元素的virtual-area的顶边，对齐父元素文本的text-top
+### 8.5 可替换元素和行块盒的基线
 
-text-bottom：该元素的virtual-area的底边，对齐父元素 的text-bottom
+| 元素类型 | 基线位置 |
+|---------|---------|
+| 图片 (`<img>`) | 图片的下外边距（默认底部） |
+| 表单元素 (`<input>`、`<textarea>`) | 内容的底边 |
+| 行块盒 (inline-block) | 1. 内部有行盒 → 最后一行文本的基线<br>2. 内部无行盒 → 下外边距（即底部） |
 
-top：该元素的virtual-area的顶边，对齐父元素的顶边（该行中的最高顶边）
+---
 
-bottom：该元素的virtual-area的底边，对齐父元素的底边（该行中的最低底边）
+## 9. 堆叠上下文 (Stacking Context)
 
-middle：该元素的中线（content-area的一半），与父元素的X字母高度一半的位置对齐
+**堆叠上下文（Stacking Context）**是一块由某个元素创建的独立区域，规定了该区域中内容在 **Z 轴**上的排列先后顺序。
 
-行盒组合起来，可以形成多行，每一行的区域叫做line-box，line-box的顶边是该行内所有行盒最高顶边，line-box的底边是该行内所有行盒最低底边
+### 9.1 创建堆叠上下文的元素
 
-实际，一个元素的实际占用高度，高度的计算通过line-box
+以下情况会创建新的堆叠上下文：
 
-行盒：inline-box
+| 条件 | 说明 |
+|------|------|
+| 根元素 (`<html>`) | 页面根级堆叠上下文 |
+| `z-index` 不为 `auto` 的定位元素 | `position` 为 `relative` / `absolute` / `fixed` / `sticky` 且设置了数值 `z-index` |
+| `opacity` 小于 1 | `opacity` 值不为 `1` 的元素 |
+| `transform` 不为 `none` | 设置了 2D/3D 变换的元素 |
+| `filter` / `perspective` / `clip-path` / `mask` 等 | 设置了这些属性的元素 |
+| `will-change` | 指定了 `transform`、`opacity` 等属性 |
+| `isolation: isolate` | 显式创建独立堆叠上下文 |
+| Flex / Grid 子元素 | `z-index` 不为 `auto` 的 Flex/Grid 容器的直接子元素 |
 
-行框：line-box，每一行都有一个行框
+> 📌 **补充**：原笔记只列举了 `html` 和 `z-index` 定位元素两种，实际创建条件远不止这些。特别是现代 CSS 中 `transform`、`opacity` 等属性非常常见，它们都会隐式创建堆叠上下文。
 
-数值：相对于基线的偏移量，向上为正数，向下为负数
+### 9.2 同一个堆叠上下文内的 Z 轴排列顺序
 
-百分比：相对于基线的偏移量，百分比相对于自身virtual-area的高度
+从后到前（从底层到顶层）：
 
-line-box是承载文字内容的必要条件，以下情况不生成行框：
+| 层级 | 内容 |
+|------|------|
+| 1 (最底层) | 创建堆叠上下文的元素的背景和边框 |
+| 2 | `z-index` 为**负值**的子堆叠上下文 |
+| 3 | 常规流中非定位的**块级盒** |
+| 4 | 非定位的**浮动盒** |
+| 5 | 常规流中非定位的**行内盒** |
+| 6 | `z-index: auto` 的定位子元素，以及 `z-index: 0` 的堆叠上下文 |
+| 7 (最顶层) | `z-index` 为**正值**的堆叠上下文 |
 
-- 某元素内部没有任何行盒
-- 某元素字体大小为0
+> ⚠️ **注意**：原笔记第 6 条描述为"任何 z-index 是 auto 的定位子元素，以及 z-index 是 0 的堆叠上下文"。严格来说，`z-index: auto` 的定位元素**不创建**新的堆叠上下文，但会在父堆叠上下文中形成一个新的层级；`z-index: 0` 则会**创建**新的堆叠上下文。两者在层级上处于同一平面，但行为有细微差别。
 
-## 可替换元素和行块盒的基线
+### 9.3 堆叠上下文的独立性
 
-图片：基线位置位于图片的下外边距
-
-解决白边：font-size：0、diaplay：block
-
-表单元素：基线位置在内容的底边
-
-行块盒：
-
-1. 行块盒最后一行有line-box，用最后一行的基线作为整个行块盒的基线。
-2. 如果行块盒内部没有行盒，则使用下外边距作为基线。
-
-# 堆叠上下文
-
-堆叠上下文（stack context），他是一块区域，这块区域由某个元素创建，他规定了该区域中的内容在Z轴上的排列先后顺序
-
-##  创建堆叠上下文的元素
-
-1. html元素
-2. 设置了z-index（非auto）数值的定位元素
-
-##  同一个堆叠上下文中元素在Z轴上的排列
-
-从后到前的排列顺序：
-
-1. 创建堆叠上下文的元素的背景和边框
-2. 堆叠级别（z-index）为负值的堆叠上下文
-3. 常规流非定位的块盒
-4. 非定位的浮动盒
-5. 常规流非定位行盒
-6. 任何z-index 是 auto 的定位子元素，以及 z-index 是 0 的堆叠上下文
-7. 堆叠级别为正值的堆叠上下文
+每个堆叠上下文**完全独立**，子元素的 `z-index` 仅在父堆叠上下文内部有效，**无法跨越父级与其他堆叠上下文中的元素比较层级**。
 
 ```html
-<!DOCTYPE html>
-<html lang="cmn-hans">
-<head>
-    <meta charset="utf-8">
-    <title>堆叠上小文</title>
-    <style>
-        html {
-            background-color: lightblue;
-        }
-        .container {
-            width: 300px;
-            height: 300px;
-            background-color: lightcoral;
-            margin-left: 100px;
-            margin-top: -20px;
-        }
-        .item {
-            width: 200px;
-            height: 200px;
-            background-color: lightgoldenrodyellow;
-            margin-left: -60px;
-            position: relative;
-            z-index: -1;
-        }
-        .float {
-            float: left;
-            width: 100px;
-            height: 100px;
-            background-color: lightgrey;
-            margin-top: -180px;
-            margin-left: 50px;
-        }
-        .inlineBox {
-            width: 150px;
-            height: 150px;
-            background-color: lightskyblue;
-            margin-top: -300px;
-        }
-        .pauto {
-            width: 150px;
-            height: 150px;
-            background-color: lightsteelblue;
-            position: relative;
-            z-index: 0;
-            margin-top: -290px;
-            margin-left: 130px;
-        }
-        .ppositive {
-            width: 120px;
-            height: 120px;
-            background-color: rgb(2, 107, 243);
-            position: relative;
-            z-index: 1;
-            margin-top: -140px;
-            margin-left: 140px;
-        }
-    </style>
-</head>
-<body>
-    <span class="inlineBox">fhdshajkhfkhdkjls</span>
-    <div class="container">
-        <div class="item"></div>
-    </div>
-    <div class="float"></div>
-    <div class="pauto"></div>
-    <div class="ppositive"></div>
-</body>
-</html>
+<div class="container">  <!-- z-index: 1，创建堆叠上下文 A -->
+  <div class="child" style="z-index: 999;"></div>  <!-- 在 A 内部层级极高 -->
+</div>
+<div class="sibling" style="z-index: 2;"></div>  <!-- 创建堆叠上下文 B -->
 ```
 
+> 💡 **提示**：即使 `.child` 的 `z-index: 999`，只要其父级 `.container` (`z-index: 1`) 位于 `.sibling` (`z-index: 2`) 之下，`.child` 就**永远不可能**覆盖 `.sibling`。
 
+---
 
-每个堆叠上下文独立于其他堆叠上下文，它们之间不能相互穿插
+## 10. SVG 可缩放矢量图形
 
-# svg
+**SVG（Scalable Vector Graphics）**是一种基于 XML 的矢量图像格式。
 
-可缩放矢量图
+### 10.1 SVG 特点
 
-- 该图片使用代码书写而成
-- 缩放不会失真
-- 内容轻量
+- 使用**代码**描述图形，可直接嵌入 HTML
+- **缩放不失真**，任意分辨率下都清晰
+- 文件**体积轻量**（相比位图）
+- 可通过 CSS 和 JavaScript 操作
 
-## 怎么使用
+### 10.2 使用方式
 
-svg可以嵌入浏览器，也可以单独成为一个文件
+1. **直接嵌入** HTML：`<svg>...</svg>`
+2. **作为图片引用**：`<img src="image.svg">`
+3. **作为 CSS 背景**：`background-image: url("image.svg")`
+4. **单独文件**：`.svg` 文件可在浏览器中直接打开
 
-xml语言，svg使用该语言定义
+### 10.3 基础形状
 
-## 书写svg代码
+| 元素 | 名称 | 常用属性 |
+|------|------|---------|
+| `<rect>` | 矩形 | `x`, `y`, `width`, `height`, `rx`, `ry` |
+| `<circle>` | 圆形 | `cx`, `cy`, `r` |
+| `<ellipse>` | 椭圆 | `cx`, `cy`, `rx`, `ry` |
+| `<line>` | 线条 | `x1`, `y1`, `x2`, `y2` |
+| `<polyline>` | 折线 | `points`（如 `"0,0 10,10 20,0"`） |
+| `<polygon>` | 多边形 | `points`（自动闭合） |
+| `<path>` | 路径 | `d`（路径数据命令） |
+| `<text>` | 文本 | `x`, `y`, `font-size` 等 |
 
-矩形：rect
+### 10.4 路径 (Path) 命令
 
-圆形：circle
+| 命令 | 全称 | 说明 |
+|------|------|------|
+| `M` | moveto | 移动到某点（不画线） |
+| `L` | lineto | 画直线到某点 |
+| `H` | horizontal lineto | 水平线 |
+| `V` | vertical lineto | 垂直线 |
+| `C` | curveto | 三次贝塞尔曲线 |
+| `S` | smooth curveto | 平滑三次贝塞尔曲线 |
+| `Q` | quadratic Bézier curve | 二次贝塞尔曲线 |
+| `T` | smooth quadratic Bézier curveto | 平滑二次贝塞尔曲线 |
+| `A` | elliptical Arc | 椭圆弧 |
+| `Z` | closepath | 闭合路径 |
 
-椭圆：ellipse
+> 💡 **提示**：大写命令（如 `M`）表示绝对坐标，小写命令（如 `m`）表示相对坐标。
 
-线条：line
-
-折线：polyline
-
-多边形：polygon
-
-路径：path
-
-M：moveto
-
-L：lineto
-
-H：horizontal lineto
-
-V：vertical lineto
-
-C：curveto
-
-S：smooth curveto
-
-Q：quadratic Belzier curve
-
-T：smooth quadratic Belzier curveto
-
-A：elliptical Arc
-
-Z：closepath
-
-
-
-A：
-
-半径1   
-
-半径2  
-
-顺时针旋转角度
-
-  小弧（0）大弧（1）
-
- 顺时针（1）逆时针（0） 
-
-结束点左边
-
-```svg
-<svg style="background: grayl" width="500" height="1000" xmlns=""></svg>
-```
-
-```svg
-<svg
-  style="background: #ccc"
-  width="500"
-  height="1000"
-  xmlns="http://www.w3.org/2000/svg"
->
-  <!-- <rect
-    width="100"
-    height="100"
-    x="100"
-    y="100"
-    fill="red"
-    stroke="#000"
-    stroke-width="5"
-  ></rect>
-  <circle
-    cx="200"
-    cy="400"
-    r="50"
-    fill="#008c8c"
-    stroke="#000"
-    stroke-width="5"
-  ></circle>
-  <ellipse rx="80" ry="30" cx="200" cy="500" fill="red"></ellipse>
-  <line x1="10" y1="10" x2="20" y2="20" stroke="#000" stroke-width="3"></line>
-  <polyline
-    points="300,100,350,100,350,150,400,150,400,200"
-    fill="transparent"
-    stroke="#000"
-    stroke-width="5"
-  ></polyline>
-  <polygon
-    points="300,300,400,400,300,500"
-    fill="none"
-    stroke="#000"
-    stroke-width="5"
-  ></polygon>
-  <path d="M150 600 L300 600 L300 800 L150 800 Z" fill="none" stroke="#000"
-    stroke-width="5"></path> -->
-    <!--扇形-->
-  <path d="M0 150 A150 150 0 0 1 150 0 L150 0 150 150 Z" fill="none" style="stroke:#000;stroke-width:3"></path>
-</svg>
+### 10.5 椭圆弧 (A) 参数详解
 
 ```
+A rx ry x-axis-rotation large-arc-flag sweep-flag x y
+```
 
-画一个八卦
+| 参数 | 说明 |
+|------|------|
+| `rx` | 水平半径 |
+| `ry` | 垂直半径 |
+| `x-axis-rotation` | 整个椭圆顺时针旋转角度 |
+| `large-arc-flag` | `0` = 小弧，`1` = 大弧 |
+| `sweep-flag` | `0` = 逆时针，`1` = 顺时针 |
+| `x, y` | 终点坐标 |
+
+### 10.6 完整示例
 
 ```svg
 <svg
@@ -614,336 +554,569 @@ A：
   height="500"
   xmlns="http://www.w3.org/2000/svg"
 >
-  <circle cx="250" cy="250" r="250" fill="#eee" stroke="#eee"></circle>
-  <path
-    d="M250 0 A125 125 0 1 0 250 250 A125 125 0 1 1 250 500 A250 250 0 0 1 250 0"
-    fill="#000"
-    stroke="#000"
-  ></path>
-  <path
-    d="M250 0 A125 125 0 1 0 250 250 A125 125 0 1 1 250 500 A250 250 0 0 0 250 0"
-    fill="#fff"
-    stroke="#000"
-  ></path>
-  <circle cx="250" cy="125" r="50" fill="#000"></circle>
-  <circle cx="250" cy="375" r="50" fill="#fff"></circle>
+  <!-- 矩形 -->
+  <rect x="10" y="10" width="100" height="80" fill="red" stroke="#000" stroke-width="2" />
+
+  <!-- 圆形 -->
+  <circle cx="200" cy="50" r="40" fill="#008c8c" stroke="#000" stroke-width="2" />
+
+  <!-- 椭圆 -->
+  <ellipse cx="350" cy="50" rx="60" ry="30" fill="gold" />
+
+  <!-- 线条 -->
+  <line x1="10" y1="120" x2="110" y2="200" stroke="#000" stroke-width="3" />
+
+  <!-- 折线 -->
+  <polyline points="150,120 200,120 200,170 250,170" fill="none" stroke="#000" stroke-width="3" />
+
+  <!-- 多边形 -->
+  <polygon points="300,120 400,120 350,200" fill="none" stroke="#000" stroke-width="3" />
+
+  <!-- 路径：扇形 -->
+  <path d="M0 300 A150 150 0 0 1 150 150 L150 300 Z" fill="orange" stroke="#000" stroke-width="2" />
 </svg>
-
 ```
 
-# 数据链接
+### 10.7 案例：绘制八卦
 
- data url
+```svg
+<svg
+  style="background: #eee"
+  width="500"
+  height="500"
+  viewBox="0 0 500 500"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <!-- 外圆底色 -->
+  <circle cx="250" cy="250" r="250" fill="#eee" />
 
-## 如何书写
+  <!-- 黑色部分 -->
+  <path
+    d="M250 0 A125 125 0 0 1 250 250 A125 125 0 0 0 250 500 A250 250 0 0 1 250 0"
+    fill="#000"
+  />
 
-数据链接：将目标文件的数据直接书写到路径的位置，如base64格式的img
+  <!-- 白色部分 -->
+  <path
+    d="M250 0 A125 125 0 0 0 250 250 A125 125 0 0 1 250 500 A250 250 0 0 0 250 0"
+    fill="#fff"
+  />
 
-语法：data:MIME,数据
+  <!-- 黑鱼眼 -->
+  <circle cx="250" cy="125" r="50" fill="#000" />
+  <!-- 白鱼眼 -->
+  <circle cx="250" cy="375" r="50" fill="#fff" />
+</svg>
+```
+
+> ⚠️ **注意**：原笔记中的八卦路径数据已简化修正，确保路径闭合正确。同时添加了 `viewBox` 属性，这是响应式 SVG 的最佳实践。
+
+---
+
+## 11. 数据链接 (Data URL)
+
+数据链接允许将小型资源（如图片、CSS）的数据**直接嵌入**到 URL 位置。
+
+### 11.1 语法
+
+```
+data:[<mediatype>][;base64],<data>
+```
+
+### 11.2 示例
 
 ```html
-<link rel="stylesheet" href="data:text/css,h1{color:blue}"/>
+<!-- 纯文本 CSS -->
+<link rel="stylesheet" href="data:text/css,h1{color:blue}" />
+
+<!-- Base64 编码的 CSS -->
+<link rel="stylesheet" href="data:text/css;base64,aDF7Y29sb3I6cmVkO30=" />
+
+<!-- Base64 编码的图片 -->
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" />
 ```
 
-## 意义：
+### 11.3 优缺点
 
-优点：
+| ✅ 优点 | ❌ 缺点 |
+|---------|---------|
+| 减少 HTTP 请求数 | 增加资源体积（Base64 编码后比原文件大约 **33%**，原笔记说 4/3 即约 33%） |
+| 有利于动态生成数据 | 不利于浏览器缓存（内联在 HTML/CSS 中） |
+| 可应用于任何需要 URL 的地方 | 增加主文档体积，拖慢首屏渲染 |
 
-1.减少了浏览器中的请求
+> ⚠️ **纠正**：原笔记写"会增加原资源的体积到原来的 4/3"。这里"4/3"应理解为"原体积的 4/3 倍"，即增加了约 33%。准确说法是：Base64 每 3 字节原始数据编码为 4 字节文本，因此体积约为原来的 **133%**。
 
-2.有利于动态生成数据
+### 11.4 适用场景
 
-缺点：
+1. 单个图片体积**很小**（通常小于 2KB），且不适合做雪碧图。
+2. 图片由其他代码**动态生成**（如验证码、二维码）。
+3. 任何可以书写 URL 的地方都可以使用（`background-image`、`src`、`href` 等）。
 
-1.增加了页面内容，增加了资源体积，导致了传输内容增加，从而增加了单个文件的传输时间
+### 11.5 Base64 编码
 
-2.不利于浏览器的缓存，浏览器通常会缓存css、js、img文件
+一种将二进制数据转换为可书写字符串的编码方式，仅使用 64 个字符（`A-Z`、`a-z`、`0-9`、`+`、`/`）以及 `=` 作为填充符。
 
-3.会增加原资源的体积到原来的4/3
+---
 
-应用场景：
+## 12. 浏览器兼容性
 
-1.当请求单个图片体积较小，并且该图片因为各种原因，不适合制作雪碧图，可以使用数据连接
+### 12.1 厂商前缀 (Vendor Prefixes)
 
-2.图片由其他代码动态生成，并且图片较小，可以使用数据连接
+当某个 CSS 特性还不是正式标准，或标准尚未被浏览器完整实现时，浏览器厂商会提供带前缀的实验性实现。
 
-3.凡是可以书写url的地方都可以写数据连接
-
-## base64
-
-一种编码方式
-
-通常用于将一些2进制数据，用一个可书写的字符串表示
-
-```html
-<link rel="stylesheet" href="data:text/css;base64,aDN7Y29sb3I6cmVkO30=">
-```
-
-# 浏览器兼容性
-
-## 厂商前缀
-
-> 比如：box-sizing，谷歌旧版本中使用-webkit-box-sizing：border-box
-
-不是标准的属性（该浏览器独有的属性），或者标准没有正式发布
-
-IE：-ms-
-
-Chrome、safari：-webkit-
-
-opera：-o-
-
-firefox：-moz-
-
-```html
-<div></div>
-```
+| 前缀 | 浏览器 | 示例 |
+|------|--------|------|
+| `-webkit-` | Chrome、Safari、新版 Edge | `-webkit-box-sizing: border-box` |
+| `-moz-` | Firefox | `-moz-border-radius: 4px` |
+| `-ms-` | IE、旧版 Edge | `-ms-flex: 1` |
+| `-o-` | 旧版 Opera | `-o-transition: all 0.3s` |
 
 ```css
 div {
-    border:1px solid;
-    width: 200px;
-    height: 200px;
-    padding: 50px;
-    box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    -o-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+      -ms-box-sizing: border-box;
+       -o-box-sizing: border-box;
+          box-sizing: border-box; /* 标准写法放最后 */
 }
 ```
 
-浏览器特有的样式：
+> 💡 **提示**：现代浏览器对大部分常用 CSS 特性已无需前缀。可使用 [Autoprefixer](https://github.com/postcss/autoprefixer) 工具自动添加必要前缀。
 
-1.谷歌浏览器的滚动条样式，只有谷歌浏览器支持
+#### 浏览器特有样式示例
+
+**1. Webkit 滚动条自定义（仅 Chrome / Safari / Edge）**
 
 ```css
-div:-webkit-scrollbar{
-    /**滚动条的整体样式**/
+/* 滚动条整体 */
+div::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
-div::-webkit-scrollbar-thumb{
-    /**滑块样式**/
+/* 滑块 */
+div::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
 }
-div::-webkit-scrollbar-track{
-    /**轨道样式**/
+/* 轨道 */
+div::-webkit-scrollbar-track {
+  background: #f1f1f1;
 }
-div::-webkit-scrollbar-button{
-    /**两端的按钮样式**/
-}
-```
-
-实际上，在开发中使用自定义的滚动条，往往是使用div+css+js实现的
-
-2.多个背景图中选一个作为背景
-
-```css
-div {
-    width:500px;
-    height:500px;
-    background-image:image-set(url() 1x,url() 2x)
+/* 两端按钮 */
+div::-webkit-scrollbar-button {
+  display: none;
 }
 ```
 
-1x\2x表示一个像素有多少个显像单元
+> 📌 **补充**：原笔记提到"使用 div+css+js 实现自定义滚动条"。现在更推荐的方案是使用 `::-webkit-scrollbar` 配合 CSS 库（如 [OverlayScrollbars](https://kingsora.github.io/OverlayScrollbars/)）或 CSS 新特性 `scrollbar-width` / `scrollbar-color`（Firefox 支持，Chrome 115+ 支持）。
 
-## css hack
-
-根据不同的浏览器（主要针对IE）设置不同的样式和元素
-
-1.样式
-
-IE中，css的特殊符号
-
-*属性，兼容IE5、IE6、IE7
+**2. 响应式背景图（`image-set`）**
 
 ```css
 div {
-    *background: red;
+  width: 500px;
+  height: 500px;
+  background-image: image-set(
+    url("image-1x.png") 1x,
+    url("image-2x.png") 2x
+  );
 }
 ```
 
-_属性，兼容IE5~IE6
+- `1x` / `2x` 表示每个 CSS 像素对应的物理像素（设备像素比 DPR）。
+- 现代替代方案：使用 `<picture>` 元素或 `srcset` 属性。
+
+### 12.2 CSS Hack（不推荐，了解即可）
+
+针对特定浏览器（主要是旧版 IE）应用特定样式。
+
+| Hack 写法 | 兼容范围 |
+|-----------|---------|
+| `*属性` | IE 5 ~ IE 7 |
+| `_属性` | IE 5 ~ IE 6 |
+| `属性值\9` | IE 5 ~ IE 10 |
+| `属性值\0` | IE 8 ~ IE 10 |
+| `属性值\9\0` | IE 9 ~ IE 10 |
 
 ```css
 div {
-    _background: red;
+  background: red;          /* 标准浏览器 */
+  *background: blue;        /* IE 5-7 */
+  _background: yellow;      /* IE 5-6 */
+  background: orange\9;     /* IE 5-10 */
+  background: yellow\0;     /* IE 8-10 */
+  background: purple\9\0;   /* IE 9-10 */
 }
 ```
 
-属性值\9，兼容IE5~IE10
+> ⚠️ **注意**：原笔记中 `orninge` 为拼写错误，已修正为 `orange`。
+
+#### 经典 Bug：IE 双边距 Bug
+
+在 IE 6 中，浮动元素的**同向外边距会翻倍**（如 `float: left` 配合 `margin-left`）。
 
 ```css
 div {
-    background: oringe\9;
+  float: left;
+  margin-left: 30px;
+  _margin-left: 15px; /* IE6  hack，实际显示为 30px */
 }
 ```
 
-属性值\0，兼容IE8~IE10
-
-```css
-div {
-    background: yellow\0;
-}
-```
-
-属性值\9\0，兼容IE9~IE10
-
-```css
-div {
-    background: yellow\9\0;
-}
-```
-
-> IE5、6、7的外边距bug，浮动元素的做外边距翻倍
-
-```css
-margin-left: 30px;
-*margin-left: 15px;
-```
-
-2.条件判断
+#### 条件注释（仅 IE）
 
 ```html
 <!--[if IE]>
-	<p>
-		这是IE浏览器
-	</p>
+  <p>这是 IE 浏览器</p>
 <![endif]-->
-<!--[if !(IE)]><-->
-<p>
-    这是其他浏览器
-</p>
+
+<!--[if IE 8]>
+  <p>这是 IE 8</p>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <p>这是 IE 9 以下的浏览器</p>
+<![endif]-->
+
+<!--[if !IE]><!-->
+  <p>这是非 IE 浏览器</p>
 <!--<![endif]-->
 ```
 
-有些html元素IE识别不了
+> 📌 **补充**：条件注释在 IE10+ 已被移除，现代项目已极少使用。
 
-## 渐进增强 和 优雅降级
+### 12.3 渐进增强 vs 优雅降级
 
-两种解决兼容性问题的思路，会影响代码的书写风格
+两种解决兼容性问题的核心思路：
 
-- 渐进增强：先适应大部分浏览器，然后针对新版本浏览器加入新的样式（书写代码时，先尽量避免书写有兼容性的代码，完成之后，再逐步加入新标准中的代码）
-- 优雅降级：先制作完整的功能，然后正对低版本浏览器进行特殊处理（书写代码时，先不用特别在意兼容性，完成整个功能之后，再针对低版本浏览器处理样式）
+| 策略 | 思路 | 代码风格 |
+|------|------|---------|
+| **渐进增强 (Progressive Enhancement)** | 先保证基础功能在所有浏览器可用，再为新浏览器增加增强效果 | 先写无兼容性问题的基础代码，再逐步加入新特性（配合 `@supports` 或前缀） |
+| **优雅降级 (Graceful Degradation)** | 先实现完整功能，再针对低版本浏览器做降级处理 | 直接按最新标准写代码，用 polyfill 或 hack 兼容旧浏览器 |
 
-## caniuse
+> 💡 **提示**：现代开发更推崇**渐进增强**，它更契合"移动优先"和"无障碍"的设计理念。
 
-查找css兼容性
+### 12.4 兼容性查询工具
 
-[caniuse.com](https://caniuse.com/)
+- **[Can I use](https://caniuse.com)**：查询 CSS / JS / HTML 特性的浏览器支持情况（最权威）
+- **[MDN Web Docs](https://developer.mozilla.org)**：每个属性的"浏览器兼容性"表格
 
-# 居中总结
+---
 
-居中：盒子在其包含块居中
+## 13. 居中方案总结
 
-## 行盒（行块盒）水平居中
+> 📌 **补充**：原笔记缺少现代布局方案（Flexbox / Grid），以下内容在保留原笔记方案的基础上做了大幅扩充。
 
-行盒一定是常规流，浮动、定位会自动block
+### 13.1 水平居中
 
-直接设置行盒（行块盒）父元素text-align：center
+#### 行盒 / 行块盒水平居中
 
-## 常规流块盒水平居中
-
-定宽，设置左右margin为auto
-
-## 绝对定位元素的水平居中
-
-定宽：设置左右的坐标为0，将左右margin设置为auto
-
-> 实际上，固定定位是绝对定位的特殊情况，所以跟绝对定位的居中方式是一样的
-
-## 浮动元素
-
-没有更好的办法，只能一点一点调，直到看上去居中
-
-## 单行文本的垂直居中
-
-设置line-height为元素的高度
-
-## 行块盒或块盒内，多上文本的垂直居中
-
-没有完美方案，设置 padding，达到类似垂直居中，缺点就是盒子的高度不能确定
-
-## 绝对定位的垂直居中
-
-定高：设置上下的坐标为0，将上下margin设置为auto
-
-# 样式补充
-
-## display：list-item
-
-设置为该属性值的盒子，本质上任然是一个块盒，但同事给盒子会附带另一个盒子，元素本省的盒子叫主盒子，附带的盒子为次盒子，主盒子和次盒子水平排列，ul>li的diaplay就是list-item
-
-设计的css：
-
-1.```list-style-type```：设置次盒子的类型
-
-2.```list-style-position```：设置次盒子相对于主盒子的位置
-
-3.```list-style```：速写属性
-
-**清空次盒子**
-
-```list-style: none;```
-
-## 图片失效时的宽高问题
-
-如果img元素的图片链接无效，img元素的特性和普通行盒一样，无法设置宽高
-
-## 行盒中包含行块盒或可替换元素
-
-行盒的高度与它内部的行块盒或可替换元素的高度无关，只跟字体大小有关系
-
-## text-align：justify
-
-除最后一行外，分散对齐
-
-如果最后一行也要分散对齐
+行盒一定是常规流元素（浮动和定位会自动转为 `block`）。
 
 ```css
-p{
-    width:200px;
-    height:200px;
-    text-align:justify;
-}
-p::affter{
-    content:"";
-    display:inline-block;
-    width: 100%;
+.parent {
+  text-align: center; /* 子行盒/行块盒水平居中 */
 }
 ```
 
-## direction he writing-mode
+#### 常规流块盒水平居中
 
-开始 start -> 结束 end
+```css
+.child {
+  width: 300px;      /* 必须定宽 */
+  margin-left: auto;
+  margin-right: auto;
+  /* 简写：margin: 0 auto; */
+}
+```
 
-左 left -> 右 end
+#### 绝对定位元素水平居中
 
-开始和结束时相对的，不同国家有不同习惯
+```css
+.child {
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 300px;      /* 必须定宽 */
+  margin-left: auto;
+  margin-right: auto;
+}
+```
 
-左右时绝对的
+> 💡 **提示**：固定定位 (`position: fixed`) 是绝对定位的特殊情况，居中方式相同。
 
-direction设置的是开始到结束的方向
+#### 浮动元素水平居中
+
+浮动元素**无法直接通过 `margin: auto` 居中**。传统方案：
+
+```css
+.parent {
+  width: fit-content; /* 或具体宽度 */
+  margin: 0 auto;
+}
+.child {
+  float: left;
+}
+```
+
+> 📌 **补充**：更现代、更简单的方案是使用 **Flexbox**（见 13.3）。
+
+### 13.2 垂直居中
+
+#### 单行文本垂直居中
+
+```css
+.box {
+  height: 100px;
+  line-height: 100px; /* line-height = height */
+}
+```
+
+#### 绝对定位垂直居中
+
+```css
+.child {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  height: 100px;      /* 必须定高 */
+  margin-top: auto;
+  margin-bottom: auto;
+}
+```
+
+#### 多行文本 / 块盒垂直居中（传统方案）
+
+原笔记提到"没有完美方案"。传统上可通过 `padding` 模拟：
+
+```css
+.box {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+```
+
+缺点：盒子高度由内容+padding决定，无法固定高度。
+
+### 13.3 现代布局方案（推荐）
+
+#### Flexbox 居中（最常用）
+
+```css
+/* 水平 + 垂直完全居中 */
+.parent {
+  display: flex;
+  justify-content: center; /* 主轴（默认水平）居中 */
+  align-items: center;     /* 交叉轴（默认垂直）居中 */
+}
+
+/* 单个元素偏离（如侧栏固定，主内容居中） */
+.parent {
+  display: flex;
+}
+.child {
+  margin: auto; /* 在 flex 容器中，auto margin 会吃掉所有剩余空间 */
+}
+```
+
+#### Grid 居中
+
+```css
+.parent {
+  display: grid;
+  place-items: center; /* 同时设置 justify-items 和 align-items */
+}
+
+/* 或 */
+.child {
+  justify-self: center;
+  align-self: center;
+}
+```
+
+#### Transform 居中（适用于绝对定位，无需定宽定高）
+
+```css
+.child {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 基于自身尺寸偏移 */
+}
+```
+
+### 13.4 居中方案速查表
+
+| 场景 | 推荐方案 | 是否需要定宽/定高 |
+|------|---------|----------------|
+| 行内/行块水平居中 | `text-align: center` | 否 |
+| 块级水平居中 | `margin: 0 auto` | 需要定宽 |
+| 单行文本垂直居中 | `line-height = height` | 否 |
+| 绝对定位居中 | `margin: auto` + 四边 `0` | 需要定宽/定高 |
+| **未知尺寸元素居中** | **Flexbox** / **Grid** / **Transform** | **否** |
+
+---
+
+## 14. 样式补充
+
+### 14.1 display: list-item
+
+设置为该值的盒子本质上仍是**块盒**，但会额外生成一个**标记盒（Marker Box）**用于显示列表符号。
+
+| 概念 | 说明 |
+|------|------|
+| 主盒子 | 元素本身的块盒 |
+| 次盒子 / 标记盒 | 附带的符号盒子，与主盒子水平排列 |
+| 典型应用 | `<ul>`、`<ol>`、`<li>` 的默认 `display` 值 |
+
+#### 相关 CSS 属性
+
+```css
+ul {
+  list-style-type: disc;        /* 符号类型：disc | circle | square | decimal | none */
+  list-style-position: outside; /* 位置：outside（默认）| inside */
+  list-style-image: url("..."); /* 自定义图片作为符号 */
+  list-style: disc outside;     /* 速写属性 */
+}
+
+/* 清除列表符号 */
+ul {
+  list-style: none;
+  padding-left: 0;  /* 通常需要同时清除默认内边距 */
+}
+```
+
+> ⚠️ **注意**：原笔记中 `diaplay` 为拼写错误，已修正为 `display`。
+
+### 14.2 图片失效时的宽高问题
+
+当 `<img>` 的 `src` 链接无效时，该元素的特性会发生变化：
+
+- 有 `src` 且图片正常加载时：属于**可替换元素**，可以设置 `width` / `height`。
+- **图片失效时**：退化为普通行盒，**无法设置宽高**（设置也不生效）。
+
+**解决方案**：
+
+```css
+img {
+  display: inline-block; /* 或 block */
+  width: 200px;
+  height: 150px;
+  background: #f0f0f0; /* 失效时显示占位背景 */
+}
+```
+
+### 14.3 行盒中包含行块盒或可替换元素
+
+行盒（`display: inline` 形成的盒子）的高度**仅与其内部的字体大小有关**，不受内部行块盒或可替换元素的高度影响。
+
+```html
+<span>
+  文字
+  <img src="..." style="height: 100px;">
+</span>
+```
+
+> ⚠️ **注意**：虽然图片高度为 100px，但外层 `<span>` 的行盒高度仍由"文字"的 `font-size` 决定。这可能导致布局不符合预期。
+
+**解决方案**：将父级设为 `inline-block`、`block`、`flex` 等，或调整 `vertical-align`。
+
+### 14.4 text-align: justify（分散对齐）
+
+使文本除最后一行外，两端对齐。
 
 ```css
 p {
-    direction: rtl;
+  width: 200px;
+  text-align: justify;
 }
 ```
 
-writing-mode：设置文字书写方向
+#### 强制最后一行也分散对齐
 
 ```css
 p {
-    /**垂直书写，从右向左**/
-    writing-mode: vertical-rl;
+  width: 200px;
+  text-align: justify;
+}
+p::after {
+  content: "";
+  display: inline-block;
+  width: 100%;
 }
 ```
 
-## utf-8
+> ⚠️ **注意**：原笔记中 `::affter` 为拼写错误，已修正为 `::after`。
+
+### 14.5 direction 与 writing-mode
+
+CSS 中定义了两种方向概念：
+
+| 概念 | 说明 | 示例 |
+|------|------|------|
+| **逻辑方向** | Start → End，与书写模式相关 | 英文：Start=左，End=右；阿拉伯文：Start=右，End=左 |
+| **物理方向** | Left → Right，绝对固定 | 不因语言/书写模式改变 |
+
+#### direction — 文本方向
 
 ```css
-p::after{
-    content:"\x80E1\x67AB"
+p {
+  direction: ltr; /* left-to-right（默认） */
+  direction: rtl; /* right-to-left，如阿拉伯语、希伯来语 */
 }
 ```
 
+#### writing-mode — 书写模式
+
+```css
+p {
+  /* 水平书写，从上到下（默认） */
+  writing-mode: horizontal-tb;
+
+  /* 垂直书写，从右向左 */
+  writing-mode: vertical-rl;
+
+  /* 垂直书写，从左向右 */
+  writing-mode: vertical-lr;
+}
+```
+
+> 📌 **补充**：配合 `direction` 和 `writing-mode`，逻辑属性（如 `margin-inline-start`、`padding-block-end`）在多语言排版中非常有用。
+
+### 14.6 Unicode 字符插入（content）
+
+通过 CSS `content` 属性插入 Unicode 字符：
+
+```css
+p::after {
+  content: "\80E1\67AB"; /* 对应 Unicode 码点 */
+}
+```
+
+> ⚠️ **注意**：原笔记中 `\x80E1` 的写法有误。CSS 中 Unicode 转义应使用反斜杠 `\` 直接后跟 1-6 位十六进制码点，不需要 `x` 前缀。此外，`\80E1\67AB` 对应的汉字需确认实际码点是否正确（示例仅供参考格式）。
+>
+> 更常见的写法：
+> ```css
+> content: "\2713";      /* ✓ */
+> content: "\2192";      /* → */
+> content: "\2605";      /* ★ */
+> ```
+
+---
+
+## 附录：常见拼写错误速查（原笔记已修正）
+
+| 错误写法 | 正确写法 | 出现位置 |
+|---------|---------|---------|
+| `diaplay` | `display` | `display: list-item` 说明、图片白边方案 |
+| `affter` | `after` | `text-align: justify` 示例 |
+| `orninge` | `orange` | CSS Hack 示例 |
+| `覆盖变样盒` | `覆盖边框盒` | Body 背景说明 |
+| `堆叠上小文` | `堆叠上下文` | HTML title |
+
+---
+
+> **文档结束**
+>
+> 整理日期：2026-05-14
+> 说明：本文档在原笔记基础上进行了重新排版、错误修正、知识分组优化，并补充了大量现代 CSS 实践内容（Flexbox、Grid、逻辑属性等）。标注 `⚠️`、`💡`、`📌` 的部分为整理时添加的备注。
