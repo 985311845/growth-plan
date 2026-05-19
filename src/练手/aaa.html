@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>iframe 示例</title>
+    <style>
+        iframe {
+            width: 100%;
+            height: 600px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 点击链接时，会在 name="myframe" 的 iframe 中打开目标页面 -->
+    <a href="https://www.baidu.com">百度</a>
+    <a href="https://www.tencent.com/" target="myframe">腾讯</a>
+    <a href="https://www.taobao.com">淘宝</a>
+
+    <iframe name="myframe" src="https://www.baidu.com"></iframe>
+</body>
+
+</html>
