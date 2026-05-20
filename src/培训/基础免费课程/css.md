@@ -833,13 +833,33 @@ body {
    - 宽度的默认值是 `auto`：将剩余空间吸收掉。
    - `margin` 的默认值是 `0`，取值也可以是 `auto`。
    - 当 `margin` 为 `auto` 且宽度也是 `auto` 时，**宽度的 `auto` 占绝对优势**，会占满包含块的内容盒。
-   - ❌若宽度、边框、内边距、外边距计算后仍有剩余空间，该剩余空间被 `margin-right` 全部吸收。
+   - ✅ **只有 `margin` 为 `auto` 时，才会吸收剩余空间**。若 `margin-left` 和 `margin-right` 都是固定值（包括默认的 `0`），剩余空间就空在那里，不会自动分配给 `margin-right`（袁老师讲课用的是旧版chrome，所以margin-right会吸收剩余空间）。
    - **块盒水平居中**：定宽后，设置 `margin: 0 auto;`（左右 margin 自动分配剩余空间）。
 
+> 📌 **补充：W3C 规范与浏览器行为详解**
+>
+> W3C CSS2.1 规范 10.3.3 规定了块级非替换元素的水平布局等式：
+> ```
+> margin-left + border-left + padding-left + width + padding-right + border-right + margin-right = 包含块宽度
+> ```
+>
+> 规范对这个等式的处理分三种情况：
+>
+> | 情况 | 条件 | 浏览器行为 |
+> |------|------|-----------|
+> | **有 `auto` 值** | `width` 或 `margin` 至少有一个是 `auto` | 用 `auto` 的值去凑齐等式。例如 `margin: 0 auto` 会平分剩余空间实现居中。 |
+> | **over-constrained（过度约束）** | 所有值都不是 `auto`，且 **总和 > 包含块宽度** | 等式装不下，浏览器强制忽略 `margin-right`（ltr 时）并重算为负值或 0，让等式成立。 |
+> | **剩余空间** | 所有值都不是 `auto`，且 **总和 < 包含块宽度** | 规范对此没有强制要求。现代浏览器**不会**自动把剩余空间塞给 `margin-right`，而是保持原值，剩余空间就空着。 |
+>
+> ⚠️ **常见误区**：W3C 规范原文说 "If all of the above have a computed value other than 'auto', the values are said to be 'over-constrained'..."，从字面看好像"所有值都不是 auto 就是 over-constrained"。但实际上浏览器只会在"总和超出包含块宽度"时才触发 over-constrained。如果总和小于包含块宽度，浏览器不做任何调整。
+>
+> 🕰️ **历史背景**：2007 ~ 2011 年间的旧版 Safari / Chrome（WebKit 内核）曾有一个 bug（[Bug 13343](https://bugs.webkit.org/show_bug.cgi?id=13343)），会把 `margin-right` 算成"元素右边缘到父元素右边缘的距离"，也就是吸收了剩余空间。当时 Firefox 和 Opera 都返回 `0px`。2011 年后 WebKit 为了和其他浏览器保持一致，修复了这个行为。所以如果你看到某些老视频里 `margin-right` 被算成了剩余空间，那是旧版浏览器的"历史遗迹"，现代 Chrome 已不会再这样。
+
 2. **垂直方向的 `auto`**
+   
    - `height` 为 `auto` 时，适应内容高度。
    - `margin` 为 `auto` 时，在垂直方向上等同于 `0`。
-
+   
 3. **百分比取值**
    - `padding`、`width`、`margin` 的百分比都是相对于**包含块的内容宽度**，跟高度没有任何关系。
    
