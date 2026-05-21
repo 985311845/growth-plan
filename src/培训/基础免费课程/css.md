@@ -897,8 +897,8 @@ body {
 
 1. 左浮动盒子靠左靠上排列。
 2. 右浮动盒子靠右靠上排列。
-3. 在包含块中排列时，**会避开常规流的块盒子**（即浮动元素不会覆盖常规流块盒的背景）。
-4. **常规流块盒在排列时，无视浮动盒子**（这就是高度塌陷的根源）。
+3. 在包含块中排列时，**常规流块盒的`行盒内容`（文字/内联元素）会避开浮动元素，但它的背景和边框仍然会在浮动元素下方，从而被浮动元素覆盖。**
+4. 后面的**常规流块盒在排列时，无视浮动盒子**，**父元素**在计算高度时无视浮动的子元素，这就是高度塌陷的根源。。
 
 ```html
 <div class="wrap">
@@ -1008,14 +1008,14 @@ body {
 
 - 设置 `z-index`，值越大越靠近用户（越在上层）。
 - **只有定位元素**（`position` 不是 `static`）设置 `z-index` 才有效。
-- `z-index` 可以是负数。如果是负数，遇到常规流或浮动流元素时会被覆盖在下面。
+- `z-index` 可以是负数。**如果是负数，遇到常规流或浮动流元素时会被覆盖在下面。**
 
 ### 定位与浮动的关系
 
 - 绝对定位、固定定位的元素一定是**块盒**，宽高根据内容撑开。
 - 绝对定位、固定定位的元素**一定不是浮动**（如果同时写了 `float` 和 `position: absolute/fixed`，`float` 会失效）。
 - **定位优先级高于浮动**。
-- 绝对定位、固定定位的**外边距不会合并**。
+- 绝对定位、固定定位的**外边距不会合并**（因为产生了BFC）。
 
 ---
 
@@ -1115,10 +1115,10 @@ body {
 
 | 选择器 | 作用 |
 |--------|------|
-| `::first-letter` | 选中元素中的第一个字母或文字 |
-| `::first-line` | 选中元素中第一行文字 |
-| `::selection` | 选中被用户鼠标框选的文字 |
-| `::placeholder` | 选中表单元素 placeholder 的文字 |
+| `::first-letter` | 选择元素中的第一个字母或文字 |
+| `::first-line` | 选择元素中第一行文字 |
+| `::selection` | 选择被用户鼠标框选的文字 |
+| `::placeholder` | 选择表单元素 placeholder 的文字 |
 
 ---
 
@@ -1174,6 +1174,47 @@ background: url("img.png") no-repeat center/cover fixed #f00;
 ```
 
 > ⚠️ **注意**：复合写法有固定顺序，且 `position` 和 `size` 之间要用 `/` 分隔。
+
+##### 📋 复合写法速查（一眼懂）
+
+```css
+background: [image] [position] / [size] [repeat] [attachment] [origin] [clip] [color];
+```
+
+**✅ 规则总结：**
+
+| 规则 | 说明 |
+|------|------|
+| **同一层内顺序无强制要求** | `image`、`repeat`、`attachment`、`color` 等大部分属性可以任意调换顺序 |
+| **`size` 必须紧跟 `position`** | 两者用 `/` 分隔，如 `center/cover`、`left top/100px 200px` |
+| **`color` 只能在最后一个背景层** | 多层背景用逗号分隔时，颜色只能写在最后一个逗号后面 |
+| **`origin` 在前，`clip` 在后** | 如果同时写两个 `visual-box` 值，第一个是 `origin`，第二个是 `clip`；只写一个则两者共用。但它们在整体中的位置不强制（可以写在最前、中间或最后）|
+
+**📝 常见正确写法示例：**
+
+```css
+/* 最常用：图 + 不重复 + 居中/铺满 + 背景色 */
+background: url("img.png") no-repeat center/cover #f00;
+
+/* color 写中间也可以（同一层内顺序不强制） */
+background: url("img.png") center/cover red no-repeat fixed;
+
+/* 带 position / size 的完整写法 */
+background: url("img.png") left top / 100px 50px no-repeat;
+
+/* 带 origin 和 clip */
+background: url("img.png") border-box padding-box; /* origin=border-box, clip=padding-box */
+
+/* 纯背景色 */
+background: #f00;
+
+/* 多层背景：颜色只能在最后一层 */
+background: url("a.png") top left no-repeat,
+            url("b.png") center / 100% 100% no-repeat,
+            url("c.png") white;
+```
+
+> 💡 **记忆技巧**：只要记住两个**硬规则**就行——① `position` 和 `size` 之间加 `/`；② 多层时 `color` 只能在最后一个逗号后面。其他的顺序换一换一般都能正常解析。
 
 ---
 

@@ -69,13 +69,16 @@ CSS 的 `@规则`（At-rules）用于提供元数据、条件逻辑或引入外�
 
 现代 Web 字体通常需要提供多种格式以兼容不同浏览器：
 
-| 格式 | 扩展名 | 说明 |
-|------|--------|------|
-| TrueType | `.ttf` | 基本格式，IE9+ 支持 |
-| Web Open Font Format | `.woff` | 主流格式，压缩率高，现代浏览器均支持 |
-| WOFF 2.0 | `.woff2` | 更优的压缩率，推荐优先使用 |
-| Embedded OpenType | `.eot` | IE 专用格式（IE6-IE8） |
-| SVG 字体 | `.svg` | 仅用于旧版 iOS Safari |
+| 格式 | 扩展名 | CSS `format()` 值 | 说明 |
+|------|--------|-------------------|------|
+| TrueType | `.ttf` | `truetype` | 基本格式，IE9+ 支持 |
+| OpenType | `.otf` | `opentype` | 基于 TrueType，支持更多高级特性 |
+| Web Open Font Format | `.woff` | `woff` | 主流格式，压缩率高，现代浏览器均支持 |
+| WOFF 2.0 | `.woff2` | `woff2` | 更优的压缩率，推荐优先使用 |
+| Embedded OpenType | `.eot` | `embedded-opentype` | IE 专用格式（IE6-IE8） |
+| SVG 字体 | `.svg` | `svg` | 仅用于旧版 iOS Safari |
+
+> 📌 **补充**：`format()` 的值**不是写扩展名**。例如 `.otf` 文件必须写 `format('opentype')`，`.ttf` 文件必须写 `format('truetype')`。如果写错了（如 `format('otf')`），浏览器无法识别，会直接跳过该字体声明，导致字体失效。
 
 #### 基本用法
 
@@ -145,7 +148,7 @@ p {
    - BFC 可以包裹住内部的浮动元素，从而解决父元素高度塌陷问题。
 
 3. **阻止元素被浮动元素覆盖**
-   - 非浮动的 BFC 元素不会与浮动元素重叠，常用于多栏布局。
+   - *BFC 的**不与浮动重叠**特性，**只适用于仍在常规流中的块级盒子***。绝对定位、固定定位等元素虽然也能创建 BFC，但它们已经脱离常规流，不会自动避开浮动元素。*
 
 ---
 

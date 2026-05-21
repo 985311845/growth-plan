@@ -5,25 +5,20 @@
     <meta charset="UTF-8">
     <title>iframe 示例</title>
     <style>
-        div.parent {
-            background-color: lightblue;
-            height: 200px;
-            border: 2px solid;
-            padding: 30px;
+        @font-face {
+            font-family: 'custom';
+            src: url("../assets/font/YOzShouXieTi-RS/YOzRS-2.otf") format('opentype'),
+                url("../assets/font/YOzShouXieTi-RS/YOzRS-90-3.otf") format('opentype');
         }
-        div.children{
-            border: 2px solid;
-            height: 100px;
-            background-color: red;
-            width: 100px;
+
+        p {
+            font-family: 'custom';
         }
     </style>
 </head>
 
 <body>
-    <div class="parent">
-        <div class="children"></div>
-    </div>
+    <p>测试字体</p>
 </body>
 
 </html>
