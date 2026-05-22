@@ -5,20 +5,47 @@
     <meta charset="UTF-8">
     <title>iframe 示例</title>
     <style>
-        @font-face {
-            font-family: 'custom';
-            src: url("../assets/font/YOzShouXieTi-RS/YOzRS-2.otf") format('opentype'),
-                url("../assets/font/YOzShouXieTi-RS/YOzRS-90-3.otf") format('opentype');
+        /* html {
+            font-size: 0;
+        } */
+
+        /* .aa {
+            width: 100px;
+            height: 100px;
+            background: chocolate;
+            position: relative;
+        } */
+
+        .bb {
+            width: 50px;
+            height: 50px;
+            background: lightblue;
+            display: inline-block;
+            /* margin-top: 0px; */
+            margin-left: -10px;
+            margin-top: 30px;
         }
 
-        p {
-            font-family: 'custom';
+        .cc {
+            width: 50px;
+            height: 50px;
+            background: lightcoral;
+            /* margin-top: -30px; */
+            float: left;
+        }
+        span{
+            margin-left: -10px;
+            margin-top: 30px;
+            background-color: lightgreen;
         }
     </style>
 </head>
 
 <body>
-    <p>测试字体</p>
+    <!-- <div class="aa"></div> -->
+     <span>行内盒</span>
+    <div class="bb">行块盒</div>
+    <div class="cc">块盒</div>
 </body>
 
 </html>
