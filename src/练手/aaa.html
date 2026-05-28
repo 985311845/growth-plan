@@ -4,48 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <title>iframe 示例</title>
-    <style>
-        /* html {
-            font-size: 0;
-        } */
-
-        /* .aa {
-            width: 100px;
-            height: 100px;
-            background: chocolate;
-            position: relative;
-        } */
-
-        .bb {
-            width: 50px;
-            height: 50px;
-            background: lightblue;
-            display: inline-block;
-            /* margin-top: 0px; */
-            margin-left: -10px;
-            margin-top: 30px;
-        }
-
-        .cc {
-            width: 50px;
-            height: 50px;
-            background: lightcoral;
-            /* margin-top: -30px; */
-            float: left;
-        }
-        span{
-            margin-left: -10px;
-            margin-top: 30px;
-            background-color: lightgreen;
-        }
-    </style>
 </head>
 
 <body>
-    <!-- <div class="aa"></div> -->
-     <span>行内盒</span>
-    <div class="bb">行块盒</div>
-    <div class="cc">块盒</div>
+    <div>页面中的内容</div>
+    <script>
+        function Action() { }
+        Action[Symbol.hasInstance] = function () {
+            return false;
+        }
+
+        const a = new Action();
+
+        console.log(a)
+
+        const r = /[A-Z]/;
+        console.log(typeof(r))
+        var aa = 132;
+        console.log(aa instanceof Number)
+    </script>
 </body>
 
 </html>
