@@ -387,3 +387,215 @@ a = 200;
 这种错误不会影响前面代码的执行，执行到报错这里，后面的代码才不会执行（因为之中错误只有编译阶段才能发现）
 3.一个代码块的错误不会影响另一个代码块的执行
 比如两个script标签里面的代码，一个有错，不会影响另一个的执行
+
+### js代码执行过程
+1.语法分析（通篇过一遍，看有没有语法错误）
+2.预编译
+3.解释执行
+
+#### 预编译
+预编译发生在函数执行的前一刻
+imply global(暗示全局变量)：即任何变量。如果变量未经声明就赋值，此变量就为全局对象（window）所有
+
+专业术语：GO（Global Object）全局对象、AO（ Activation Object）活动对象，在 JavaScript 执行上下文中，它用于存储函数内的变量、函数声明和参数。每当一个函数被调用时，会创建对应的活动对象，随后作为该函数执行上下文的作用域链的一部分。 
+
+全局：
+1.创建GO
+2.找变量申明
+3.找函数申明，值赋予函数体
+函数：
+1.创建AO对象
+2.找形参和变量申明，将变量和形参作为AO属性名，值为undefined
+3.将实参值和形参统一
+4.在函数体里面找函数声明，值赋予函数体
+
+特别注意：
+1.if里面不能声明函数
+2.只有一种情况读取未定义的变量是不报错的，就是typeof(未定义的变量)，返回值是"undefined"
+3.空的空格字符串类型转换成boolean是true
+4.if()括号里面的是表达式，所以if(function a(){}),function a(){}其实是表达式，所以
+```javascript
+if(function a(){}){
+        var b = typeof(a);
+}
+```
+typeof(a)其实是'undefined'，而不是'function'
+
+## 作用域精解
+[[scope]]作用域集合，函数对象的属性之一
+函数每次执行时，对应的执行上下文都是独一无二的，所以多次调用同一个函数会导致创建多个执行上下文，当函数执行完毕，他所创建的执行上下文会被销毁
+作用域链：[[scope]]中所存储的执行上下文对象的集合，这个集合呈链式链接，我们把这种连是连接叫做作用域链
+```javascript
+function a (){
+        function b(){
+                var b = 123;
+        }
+        var a = 123;
+        b();
+}
+var glob = 100;
+a();
+```
+a函数的作用域链如下
+![作用域链](../../assets/scope.png)
+b函数的作用域链如下：
+![作用域链](../../assets/scope2.png)
+
+b中的a的AO就是a执行时产生的AO，只是b中的a的AO是a执行时产生的AO的引用
+
+查找变量：从该函数作用域链的顶端依次向下查找
+比如函数A刚出生(定义时)的时候，第0位（顶端）存的是Global Object
+
+```javascript
+function a() {
+        function b(){
+                function c(){}
+                c();
+        }
+        b();
+}
+a();
+```
+
+a  define   a.[[scope]]---> 0 ： GO
+a  doing    a.[[scope]]---> 0 : aAO
+
+b define    b.[[scope]]---> 0 : aAO
+                            1 : GO
+b doing     b.[[scope]]---> 0 : bAO
+                            1 : aAO
+                            2 : GO
+
+c  define   c.[[scope]]---> 0 : bAO
+                            1 : aAO
+                            2 : GO
+c  doing    c.[[scope]]---> 0 : cAO
+                            1 : bAO
+                            2 : aAO
+                            3 : GO
+
+## 闭包
+导致作用域链不释放，该释放不释放，导致内存泄露（什么是内存泄露，打个比喻，手里捧着一捧沙子，捧得越多，流失的越多，内存也一样，存的东西越多，剩余的内存越少，跟泄露了一样，所以叫内存泄漏）
+
+闭包的作用：
+1.实现公有变量
+        eg:数字累加器
+2.可以做缓存（存储结构）
+        eg：eater
+3.可以实现封装，属性私有化。
+        eg：Person();
+4.模块化开发，防止污染全局变量
+```javascript
+//累加器
+function add(){
+        var a = 0;
+        return function(){
+                a+=1;
+        }
+}
+//缓存
+function eater(){
+        var food = "";
+        var obj = {
+                eat:function(){
+                        console.log("i am eating" + food);
+                        food = "";
+                },
+                push:function(myFood){
+                        food = myFood;
+                }
+        }
+        return obj;
+}
+var eater1 = eater();
+eater1.push('banana');
+eater1.eat();
+```
+
+## 立即执行函数
+针对初始化功能的函数，执行完成之后会立即释放内存
+```javascript
+var num = (function (a,b,c){
+    var d = a + b + c * 2 - 2;
+    return d;
+}(1,2,3))
+```
+只有表达式才能被执行符号执行
+```javascript
+//这个叫函数声明
+function test(){}()
+//会报错：语法错误
+```
+```javascript
+// 这个叫函数表达式
+var test = function(){}();
+// 都叫表达式了，肯定可以执行，不报错
+// 而且test的typeof为undefined：var test叫变量声明，把function(){}()赋值给test的过程叫表达式
+```
+能被执行符号执行的表达式，那这个函数的函数名字会被忽略
+```javascript
+// 这也是一个表达式，test这个名字会被忽略
++ function test(){console.log('a')}()
+``` 
+()本就是数学运算符，所有function被括号抱起来，那不就变成了表达式吗？这样就一下子讲通了
+所以(function test(){console.log('a')}())test这个名字没啥意义
+就演变成了
+(function (){console.log('a')}())
+
+W3C推荐把执行符号放在里面
+也就是推荐：(function (){console.log('a')}())这样写
+而不是：(function (){console.log('a')})()这样写，虽然这样写也没什么毛病 
+
+```javascript
+function test(){
+
+}(1,2,3,4)
+// 这样写不报错，为什么？因为js引擎会把它解析成下面的格式
+function test(){
+
+}//他们两被拆开了，函数独立了
+
+(1,2,3,4)//这也是一个表达式
+```
+
+```javascript
+function test(){
+        var arr = [];
+        for(var i = 0;i < 10;i++){
+                arr[i] = function(){
+                        console.log(i)
+                }
+        }
+        return arr;
+}
+
+var myArr = test();
+
+for(var j = 0; j < 10;j++){
+        myArr[j]();
+}
+```
+为什么全打印出来是10，因为闭包
+```javascript
+function test(){
+        var arr = [];
+        for(var i = 0; i < 10; i++){
+                (function(j){
+                        arr[j] = function(){
+                                console.log(j);
+                        }
+                }(i))
+        }
+        return arr;
+}
+
+var myArr = test();
+
+for(var j = 0; j < 10; j++){
+        myArr[j]();
+}
+```
+
+思考：在js中，表达式的定义是什么？
+
+## 闭包精细版
