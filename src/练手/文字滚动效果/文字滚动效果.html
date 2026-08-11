@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            width: 400px;
+            height: 30px;
+            border: 3px solid lightgreen;
+            overflow: auto;
+        }
+
+        .list li {
+            height: 30px;
+            line-height: 30px;
+            background-color: lightcoral;
+            padding-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <ul class="list">
+        <li>1. Lorem, ipsum.</li>
+        <li>2. Lorem, ipsum dolor.</li>
+        <li>3. Lorem ipsum dolor sit.</li>
+        <li>4. Lorem ipsum dolor sit amet.</li>
+    </ul>
+
+    <script>
+        onload = function () {
+            // 第一步：获取列表
+            var list = document.querySelector('.list');
+
+            // 第二步：滚滚动到下一项
+            var curIndex = 0; // 当前项
+            var itemHeight = getComputedStyle(list.children[0]).height.slice(0, -2) * 1 // li的高度;
+            function moveNext() {
+                var from = curIndex * itemHeight; //滚动开始的位置
+                curIndex++;
+                var to = curIndex * itemHeight;  //滚动结束的位置
+                // 让滚动平滑的而进行
+                var duration = 10; //每10毫秒滚动一次
+                var totalDuration = 300; // 滚动完成的耗时
+                var num = totalDuration / duration; // 滚动完成需要滚动的次数
+                var distance = itemHeight / num; // 每10毫秒滚动的距离
+
+                const timerId = setInterval(() => {
+                    from += distance;
+                    if (from >= to) {
+                        clearInterval(timerId)
+                        // 滚动完成之后，如果是最后一项，那就回到第一项\
+                        if (curIndex === list.children.length - 1) {
+                            curIndex = 0;
+                        };
+                    }
+                    list.scrollTop = from;
+                }, duration);
+            };
+
+            // 第三步：让list自己滚动
+            var duration = 1000; // 滚动的间隔时间
+            function cloneNode() {
+                var newNode = list.children[0].cloneNode(true);
+                list.appendChild(newNode);
+            }
+            cloneNode();
+            setInterval(moveNext, duration);
+        }
+    </script>
+</body>
+
+</html>

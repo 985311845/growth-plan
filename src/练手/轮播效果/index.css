@@ -1,0 +1,86 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.warp {
+    width: 320px;
+    height: 180px;
+    overflow: hidden;
+    position: relative;
+    margin: 20px auto;
+}
+
+.list {
+    list-style: none;
+    height: 180px;
+}
+
+.clear::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.item {
+    width: 320px;
+    height: 180px;
+    float: left;
+}
+
+.bg1 {
+    background-color: lightblue;
+}
+
+.bg2 {
+    background-color: lightcoral;
+}
+
+.bg3 {
+    background-color: lightgreen;
+}
+
+.bg4 {
+    background-color: lightseagreen;
+}
+
+.indicator {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+
+.indicatorItem {
+    display: inline-block;
+    width: 10px;
+    height: 4px;
+    background-color: lightslategrey;
+    border-radius: 2px;
+}
+
+.indicatorItem+.indicatorItem {
+    margin-left: 10px;
+}
+
+.active {
+    background-color: lightpink;
+}
+
+.arrowLeft,
+.arrowRight {
+    position: absolute;
+    width: 20px;
+    height: 100%;
+    top: 0;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.arrowLeft {
+    left: 0;
+}
+
+.arrowRight {
+    right: 0;
+}
